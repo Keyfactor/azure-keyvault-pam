@@ -16,6 +16,7 @@ using System;
 
 namespace Keyfactor.Extensions.Pam.AzureKeyVault
 {
+    [Serializable]
     public class KeyVaultPamException : Exception
     {
         public KeyVaultPamException(string message): base(message)

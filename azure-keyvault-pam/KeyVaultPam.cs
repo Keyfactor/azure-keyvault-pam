@@ -54,23 +54,42 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             Dictionary<string, string> initializationInfo)
         {
             _logger.MethodEntry(LogLevel.Debug);
-            
-            _logger.LogDebug("Instantiating new instance of SecretClient");
-            string keyVaultUri = GetValueFromDictionary(initializationInfo, "initializationInfo", "KeyVaultUri");
-            _logger.LogDebug($"KeyVaultUri: {keyVaultUri}");
-            SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+
+            SecretClient secretClient = GetSecretClient(initializationInfo);
             
             string secretId = GetValueFromDictionary(instanceParameters, "instanceParameters", "SecretId");
-            
             _logger.LogDebug($"SecretId: {secretId}");
+            
             _logger.LogDebug("Getting secret from Azure Key Vault...");
-            
             KeyVaultSecret secret = await secretClient.GetSecretAsync(secretId).ConfigureAwait(false);
-            
             _logger.LogDebug("Finished getting secret from Azure Key Vault.");
+            
             _logger.MethodExit(LogLevel.Debug);
             
             return secret.Value;
+        }
+
+        private SecretClient GetSecretClient(Dictionary<string, string> initializationInfo)
+        {
+            _logger.MethodEntry(LogLevel.Debug);
+            
+            _logger.LogDebug("Instantiating new instance of SecretClient...");
+            
+            string keyVaultUri = GetValueFromDictionary(initializationInfo, "initializationInfo", "KeyVaultUri");
+            _logger.LogDebug($"KeyVaultUri: {keyVaultUri}");
+            
+            DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
+            {
+                AdditionallyAllowedTenants = { "*" },
+            };
+            
+            SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential(options));
+            
+            _logger.LogDebug("Finished instantiating SecretClient.");
+            
+            _logger.MethodExit(LogLevel.Debug);
+            
+            return secretClient;
         }
 
         private string GetValueFromDictionary(Dictionary<string, string> dictionary, string dictionaryName, string key)
@@ -78,7 +97,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             _logger.MethodEntry(LogLevel.Debug);
             _logger.LogDebug($"Getting value of key {key} from dictionary {dictionaryName}...");
             
-            if (!dictionary.ContainsKey(key) || string.IsNullOrWhiteSpace(dictionary[key]))
+            if (!dictionary.ContainsKey(key) || string.IsNullOrEmpty(dictionary[key]))
             {
                 string message = $"Dictionary {dictionaryName} is missing a value for {key}";
                 _logger.LogError(message);
