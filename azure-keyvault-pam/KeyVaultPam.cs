@@ -61,7 +61,11 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             _logger.LogDebug($"SecretId: {secretId}");
             
             _logger.LogDebug("Getting secret from Azure Key Vault...");
-            KeyVaultSecret secret = await secretClient.GetSecretAsync(secretId).ConfigureAwait(false);
+            
+            KeyVaultSecret secret = await secretClient
+                .GetSecretAsync(secretId)
+                .ConfigureAwait(false);
+            
             _logger.LogDebug("Finished getting secret from Azure Key Vault.");
             
             _logger.MethodExit(LogLevel.Debug);
@@ -80,7 +84,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             
             DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
             {
-                AdditionallyAllowedTenants = { "*" },
+                AuthorityHost = GetAzureAuthorityHost()
             };
             
             SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential(options));
@@ -90,6 +94,46 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             _logger.MethodExit(LogLevel.Debug);
             
             return secretClient;
+        }
+
+        private Uri GetAzureAuthorityHost()
+        {
+            _logger.MethodEntry(LogLevel.Debug);
+            string authorityHost = Environment.GetEnvironmentVariable("AZURE_AUTHORITY_HOST");
+            
+            if (string.IsNullOrWhiteSpace(authorityHost))
+            {
+                _logger.LogDebug("Using default Azure authority host.");
+                return null;
+            }
+            
+            _logger.LogDebug($"Authority Host: {authorityHost}");
+
+            Uri resolvedAuthorityHost;
+            
+            switch (authorityHost)
+            {
+                case "china":
+                    _logger.LogDebug("Using China Azure authority host.");
+                    resolvedAuthorityHost = AzureAuthorityHosts.AzureChina;
+                    break;
+                case "government":
+                    _logger.LogDebug("Using government Azure authority host.");
+                    resolvedAuthorityHost = AzureAuthorityHosts.AzureGovernment;
+                    break;
+                case "public":
+                    _logger.LogDebug("Using public Azure authority host.");
+                    resolvedAuthorityHost = AzureAuthorityHosts.AzurePublicCloud;
+                    break;
+                default:
+                    _logger.LogDebug("Using custom authority host.");
+                    resolvedAuthorityHost = new Uri(authorityHost);
+                    break;
+            }
+            
+            _logger.MethodExit(LogLevel.Debug);
+
+            return resolvedAuthorityHost;
         }
 
         private string GetValueFromDictionary(Dictionary<string, string> dictionary, string dictionaryName, string key)
