@@ -1,0 +1,13 @@
+{
+    "extensions": {
+      "Keyfactor.Platform.Extensions.IPAMProvider": {
+        "PAMProviders.AzureKeyVault.PAMProvider": {
+          "assemblyPath": "azure-keyvault-pam.dll",
+          "TypeFullName": "Keyfactor.Extensions.Pam.AzureKeyVault.KeyVaultPam"
+        }
+      }
+    },
+    "Keyfactor:PAMProviders:Azure-KeyVault:InitializationInfo": {
+      "KeyVaultUri": "https://myvault.vault.azure.net"
+    }
+  }
