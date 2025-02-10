@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azure-keyvault-pam", "azure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{DE9BEA57-7EB0-44C9-A473-6F5AF1E39D2A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{94CBEC0C-5ED2-4013-80FD-7DC59CD83397}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyVaultPam.Tests", "KeyVaultPam.Tests\KeyVaultPam.Tests.csproj", "{63D22707-9B74-4F85-B9A3-5E2C5F5778CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,12 @@ Global
 		{DE9BEA57-7EB0-44C9-A473-6F5AF1E39D2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE9BEA57-7EB0-44C9-A473-6F5AF1E39D2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE9BEA57-7EB0-44C9-A473-6F5AF1E39D2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D22707-9B74-4F85-B9A3-5E2C5F5778CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D22707-9B74-4F85-B9A3-5E2C5F5778CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D22707-9B74-4F85-B9A3-5E2C5F5778CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D22707-9B74-4F85-B9A3-5E2C5F5778CE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{63D22707-9B74-4F85-B9A3-5E2C5F5778CE} = {94CBEC0C-5ED2-4013-80FD-7DC59CD83397}
 	EndGlobalSection
 EndGlobal

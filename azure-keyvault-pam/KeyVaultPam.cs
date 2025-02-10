@@ -27,6 +27,16 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
     {
         public string Name => "Azure-KeyVault";
         private readonly ILogger _logger = LogHandler.GetClassLogger<KeyVaultPam>();
+        private SecretClient _secretClient;
+
+        public KeyVaultPam()
+        {
+        }
+
+        public KeyVaultPam(SecretClient client)
+        {
+            _secretClient = client;
+        }
         
         /// <summary>
         /// Retrieves a password value from Azure Key Vault.
@@ -55,14 +65,18 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         {
             _logger.MethodEntry(LogLevel.Debug);
 
-            SecretClient secretClient = GetSecretClient(initializationInfo);
+            if (_secretClient is null)
+            {
+                _secretClient = GetSecretClient(initializationInfo);
+            }
+            
             
             string secretId = GetValueFromDictionary(instanceParameters, "instanceParameters", "SecretId");
             _logger.LogDebug($"SecretId: {secretId}");
             
             _logger.LogDebug("Getting secret from Azure Key Vault...");
             
-            KeyVaultSecret secret = await secretClient
+            KeyVaultSecret secret = await _secretClient
                 .GetSecretAsync(secretId)
                 .ConfigureAwait(false);
             
