@@ -74,7 +74,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
 
             if (_secretClient is null)
             {
-                _secretClient = new KeyVaultClientFactory(_logger).Create(initializationInfo);
+                _secretClient = new KeyVaultClientFactory(_logger, initializationInfo).Create();
             }
 
 

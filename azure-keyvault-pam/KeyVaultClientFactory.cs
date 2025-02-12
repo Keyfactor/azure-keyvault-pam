@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
@@ -27,23 +26,25 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
     {
         private readonly ILogger _logger;
         private readonly KeyVaultPamValueResolver _resolver;
+        private readonly Dictionary<string, string> _initializationInfo;
 
-        public KeyVaultClientFactory(ILogger logger)
+        public KeyVaultClientFactory(ILogger logger, Dictionary<string, string> initializationInfo)
         {
             _logger = logger;
             _resolver = new KeyVaultPamValueResolver(logger);
+            _initializationInfo = initializationInfo;
         }
 
-        public SecretClient Create(Dictionary<string, string> initializationInfo)
+        public SecretClient Create()
         {
             _logger.MethodEntry(LogLevel.Debug);
 
             _logger.LogDebug("Instantiating new instance of SecretClient...");
 
-            string keyVaultUri = _resolver.GetValueFromDictionary(initializationInfo, "initializationInfo", "KeyVaultUri");
+            string keyVaultUri = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "KeyVaultUri");
             _logger.LogDebug($"KeyVaultUri: {keyVaultUri}");
 
-            SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), GetTokenCredentials(initializationInfo).Key);
+            SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), GetTokenCredentials().Key);
 
             _logger.LogDebug("Finished instantiating SecretClient.");
 
@@ -52,7 +53,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             return secretClient;
         }
 
-        internal KeyValuePair<TokenCredential, Type> GetTokenCredentials(Dictionary<string, string> initializationInfo)
+        internal KeyValuePair<TokenCredential, Type> GetTokenCredentials()
         {
             _logger.MethodEntry(LogLevel.Debug);
             
@@ -60,20 +61,20 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
 
             TokenCredentialOptions options = new DefaultAzureCredentialOptions()
             {
-                AuthorityHost = GetAzureAuthorityHost(initializationInfo)
+                AuthorityHost = GetAzureAuthorityHost()
             };
             TokenCredential credentials = new DefaultAzureCredential((DefaultAzureCredentialOptions) options);
             Type credentialsType = typeof(DefaultAzureCredential);
             
-            if (initializationInfo.ContainsKey("TenantId") 
-                    && initializationInfo.ContainsKey("ClientId")
-                    && initializationInfo.ContainsKey("ClientSecret"))
+            if (_initializationInfo.ContainsKey("TenantId") 
+                    && _initializationInfo.ContainsKey("ClientId")
+                    && _initializationInfo.ContainsKey("ClientSecret"))
             {
                 _logger.LogDebug($"Found TenantId, ClientId and ClientSecret in initialization info. Setting up client secret credentials.");
                 
-                string tenantId = _resolver.GetValueFromDictionary(initializationInfo, "initializationInfo", "TenantId");
-                string clientId = _resolver.GetValueFromDictionary(initializationInfo, "initializationInfo", "ClientId");
-                string clientSecret = _resolver.GetValueFromDictionary(initializationInfo, "initializationInfo", "ClientSecret");
+                string tenantId = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "TenantId");
+                string clientId = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "ClientId");
+                string clientSecret = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "ClientSecret");
                 
                 credentials = new ClientSecretCredential(tenantId, clientId, clientSecret, options);
                 credentialsType = typeof(ClientSecretCredential);
@@ -90,11 +91,11 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             return new KeyValuePair<TokenCredential, Type>(credentials, credentialsType);
         }
 
-        internal Uri GetAzureAuthorityHost(Dictionary<string, string> initializationInfo)
+        internal Uri GetAzureAuthorityHost()
         {
             _logger.MethodEntry(LogLevel.Debug);
             
-            string authorityHost = _resolver.GetValueFromDictionaryOrEnvironment(initializationInfo, "initializationInfo", 
+            string authorityHost = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", 
                 "AuthorityHost", "AZURE_AUTHORITY_HOST");
 
             if (string.IsNullOrEmpty(authorityHost))
