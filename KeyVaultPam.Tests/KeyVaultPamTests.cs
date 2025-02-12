@@ -26,6 +26,7 @@ public class KeyVaultPamTests
     
     private const string MockKeyVaultSecretName = "foo";
     private const string MockKeyVaultSecretValue = "bar";
+    private const string MockKeyVaultUri = "https://example.azure.net/";
 
     public KeyVaultPamTests()
     {
@@ -44,7 +45,7 @@ public class KeyVaultPamTests
         Dictionary<string, string> initializationInfo = new();
         
         instanceParameters.Add("SecretId", MockKeyVaultSecretName);
-        initializationInfo.Add("KeyVaultUri", "https://example.azure.net/");
+        initializationInfo.Add("KeyVaultUri", MockKeyVaultUri);
 
         string result = _sut.GetPassword(instanceParameters, initializationInfo);
         
@@ -57,7 +58,7 @@ public class KeyVaultPamTests
         Dictionary<string, string> instanceParameters = new();
         Dictionary<string, string> initializationInfo = new();
         
-        initializationInfo.Add("KeyVaultUri", "https://example.azure.net/");
+        initializationInfo.Add("KeyVaultUri", MockKeyVaultUri);
 
         Assert.Throws<KeyVaultPamException>(() => _sut.GetPassword(instanceParameters, initializationInfo));
     }
@@ -69,7 +70,7 @@ public class KeyVaultPamTests
         Dictionary<string, string> initializationInfo = new();
         
         instanceParameters.Add("SecretId", string.Empty);
-        initializationInfo.Add("KeyVaultUri", "https://example.azure.net/");
+        initializationInfo.Add("KeyVaultUri", MockKeyVaultUri);
 
         Assert.Throws<KeyVaultPamException>(() => _sut.GetPassword(instanceParameters, initializationInfo));
     }
