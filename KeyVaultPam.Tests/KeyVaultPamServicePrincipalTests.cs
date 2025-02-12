@@ -20,22 +20,22 @@ using NSubstitute;
 
 namespace KeyVaultPamTests;
 
-public class KeyVaultPamTests
+public class KeyVaultPamServicePrincipalTests
 {
-    private readonly KeyVaultPam _sut;
+    private readonly KeyVaultPamServicePrincipal _sut;
     
     private const string MockKeyVaultSecretName = "foo";
     private const string MockKeyVaultSecretValue = "bar";
     private const string MockKeyVaultUri = "https://example.azure.net/";
 
-    public KeyVaultPamTests()
+    public KeyVaultPamServicePrincipalTests()
     {
         SecretClient secretClient = Substitute.For<SecretClient>();
         secretClient
             .GetSecretAsync(MockKeyVaultSecretName, Arg.Any<string>())
             .Returns(Task.FromResult(Response.FromValue(new KeyVaultSecret(MockKeyVaultSecretName, MockKeyVaultSecretValue), new FakeAzureResponse())));
         
-        _sut = new KeyVaultPam(secretClient);
+        _sut = new KeyVaultPamServicePrincipal(secretClient);
     }
     
     [Fact]
@@ -43,7 +43,7 @@ public class KeyVaultPamTests
     {
         string result = _sut.Name;
         
-        Assert.Equal("Azure-KeyVault", result);
+        Assert.Equal("Azure-KeyVault-ServicePrincipal", result);
     }
     
     [Fact]

@@ -24,6 +24,53 @@
               "InstanceLevel": false
             },
             {
+              "Name": "AuthorityHost",
+              "DisplayName": "Authority Host",
+              "DataType": 1,
+              "InstanceLevel": false
+            },
+            {
+              "Name": "SecretId",
+              "DisplayName": "Secret ID",
+              "DataType": 1,
+              "InstanceLevel": true
+            }
+          ]
+        },
+        "Azure-KeyVault-ServicePrincipal": {
+          "Name": "Azure-KeyVault-ServicePrincipal",
+          "Parameters": [
+            {
+              "Name": "KeyVaultUri",
+              "DisplayName": "Key Vault URI",
+              "DataType": 1,
+              "InstanceLevel": false
+            },
+            {
+              "Name": "AuthorityHost",
+              "DisplayName": "Authority Host",
+              "DataType": 1,
+              "InstanceLevel": false
+            },
+            {
+              "Name": "TenantId",
+              "DisplayName": "Tenant ID",
+              "DataType": 1,
+              "InstanceLevel": false
+            },
+            {
+              "Name": "ClientId",
+              "DisplayName": "Client ID",
+              "DataType": 1,
+              "InstanceLevel": false
+            },
+            {
+              "Name": "ClientSecret",
+              "DisplayName": "ClientSecret",
+              "DataType": 2,
+              "InstanceLevel": false
+            },
+            {
               "Name": "SecretId",
               "DisplayName": "Secret ID",
               "DataType": 1,

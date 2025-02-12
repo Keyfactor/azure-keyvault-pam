@@ -8,6 +8,7 @@
       }
     },
     "Keyfactor:PAMProviders:Azure-KeyVault:InitializationInfo": {
-      "KeyVaultUri": "https://myvault.vault.azure.net"
+      "KeyVaultUri": "https://myvault.vault.azure.net",
+      "AuthorityHost": "public"
     }
   }
