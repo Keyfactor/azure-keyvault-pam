@@ -60,12 +60,12 @@ internal class Program
         Dictionary<string, string> instanceParameters = new();
         
         initializationInfo.Add("KeyVaultUri", Environment.GetEnvironmentVariable("KEYVAULT_VAULT_URI") ?? string.Empty);
+        initializationInfo.Add("ClientId", Environment.GetEnvironmentVariable("AZURE_CLIENT_ID") ?? "bogus");
+        initializationInfo.Add("ClientSecret", Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET") ?? "value");
+        initializationInfo.Add("TenantId", Environment.GetEnvironmentVariable("AZURE_TENANT_ID") ?? "changeme");
+        
         instanceParameters.Add("SecretId", Environment.GetEnvironmentVariable("KEYVAULT_SECRET_ID") ?? string.Empty);
         instanceParameters.Add("AuthorityHost", Environment.GetEnvironmentVariable("AZURE_AUTHORITY_HOST") ?? "public");
-        
-        instanceParameters.Add("ClientId", Environment.GetEnvironmentVariable("AZURE_CLIENT_ID") ?? "bogus");
-        instanceParameters.Add("ClientSecret", Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET") ?? "value");
-        instanceParameters.Add("TenantId", Environment.GetEnvironmentVariable("AZURE_TENANT_ID") ?? "changeme");
         
         Console.WriteLine("Getting password from Azure Key Vault...");
         

@@ -72,9 +72,9 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             {
                 _logger.LogDebug($"Found TenantId, ClientId and ClientSecret in initialization info. Setting up client secret credentials.");
                 
-                string tenantId = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "TenantId");
-                string clientId = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "ClientId");
-                string clientSecret = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "ClientSecret");
+                string tenantId = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", "TenantId", "AZURE_TENANT_ID");
+                string clientId = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", "ClientId", "AZURE_CLIENT_ID");
+                string clientSecret = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", "ClientSecret", "AZURE_CLIENT_SECRET");
                 
                 credentials = new ClientSecretCredential(tenantId, clientId, clientSecret, options);
                 credentialsType = typeof(ClientSecretCredential);
