@@ -1,5 +1,5 @@
 {
-  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+  "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
   "integration_type": "pam",
   "name": "Azure Key Vault PAM Provider",
   "status": "prototype",
@@ -21,19 +21,22 @@
               "Name": "KeyVaultUri",
               "DisplayName": "Key Vault URI",
               "DataType": 1,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "URI for your Azure Key Vault"
             },
             {
               "Name": "AuthorityHost",
               "DisplayName": "Authority Host",
               "DataType": 1,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "Authority host of your Azure infrastructure"
             },
             {
               "Name": "SecretId",
               "DisplayName": "Secret ID",
               "DataType": 1,
-              "InstanceLevel": true
+              "InstanceLevel": true,
+              "Description": "Name of your secret in Azure Key Vault"
             }
           ]
         },
@@ -44,37 +47,43 @@
               "Name": "KeyVaultUri",
               "DisplayName": "Key Vault URI",
               "DataType": 1,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "URI for your Azure Key Vault"
             },
             {
               "Name": "AuthorityHost",
               "DisplayName": "Authority Host",
               "DataType": 1,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "Authority host of your Azure infrastructure"
             },
             {
               "Name": "TenantId",
               "DisplayName": "Tenant ID",
               "DataType": 1,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "Tenant or directory ID in Azure"
             },
             {
               "Name": "ClientId",
               "DisplayName": "Client ID",
               "DataType": 1,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "Application ID in Entra AD"
             },
             {
               "Name": "ClientSecret",
               "DisplayName": "ClientSecret",
               "DataType": 2,
-              "InstanceLevel": false
+              "InstanceLevel": false,
+              "Description": "Client secret for your application ID"
             },
             {
               "Name": "SecretId",
               "DisplayName": "Secret ID",
               "DataType": 1,
-              "InstanceLevel": true
+              "InstanceLevel": true,
+              "Description": "Name of your secret in Azure Key Vault"
             }
           ]
         }
