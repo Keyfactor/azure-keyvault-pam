@@ -1,0 +1,17 @@
+{
+    "extensions": {
+        "Keyfactor.Platform.Extensions.IPAMProvider": {
+            "PAMProviders.Azure-KeyVault-ServicePrincipal.PAMProvider": {
+                "assemblyPath": "azure-keyvault-pam.dll",
+                "TypeFullName": "Keyfactor.Extensions.Pam.AzureKeyVault.KeyVaultPamServicePrincipal"
+            }
+        }
+    },
+    "Keyfactor:PAMProviders:Azure-KeyVault-ServicePrincipal:InitializationInfo": {
+        "KeyVaultUri": "https://myvault.vault.azure.net",
+        "AuthorityHost": "public",
+        "TenantId": "tenantId",
+        "ClientId": "clientId",
+        "ClientSecret": "clientSecret"
+    }
+}
