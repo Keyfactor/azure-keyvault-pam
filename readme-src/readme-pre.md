@@ -1,6 +1,3 @@
----
-### readme-src/readme-pre.md
----
 #### Compatibility
-Anything in this file will appear after the boiler-plate text. 
-This file can be deleted if not needed
+This release was tested against Azure Key Vault.
+Using this on a Universal Orchestrator requires UO version 11.2 or greater.
