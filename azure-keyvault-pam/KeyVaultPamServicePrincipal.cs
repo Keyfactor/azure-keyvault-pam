@@ -18,20 +18,50 @@ using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.Extensions.Pam.AzureKeyVault
 {
+    /// <summary>
+    /// Azure Key Vault PAM provider using service principal authentication.
+    /// </summary>
+    /// <remarks>
+    /// This provider requires explicit service principal credentials:
+    /// - TenantId
+    /// - ClientId
+    /// - ClientSecret
+    /// These can be provided via initialization parameters or environment variables.
+    /// </remarks>
     public class KeyVaultPamServicePrincipal : KeyVaultPamCommon
     {
+        /// <summary>
+        /// Logger instance for diagnostic output and error tracking.
+        /// </summary>
         private static readonly ILogger Logger = LogHandler.GetClassLogger<KeyVaultPamServicePrincipal>();
 
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPamServicePrincipal class.
+        /// </summary>
+        /// <remarks>
+        /// When using this constructor, service principal credentials must be provided
+        /// through initialization parameters or environment variables.
+        /// </remarks>
         public KeyVaultPamServicePrincipal(): base(Logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPamServicePrincipal class with a pre-configured SecretClient.
+        /// </summary>
+        /// <param name="client">Pre-configured Azure Key Vault SecretClient</param>
+        /// <remarks>
+        /// Use this constructor when you need to provide a custom-configured SecretClient,
+        /// such as when using different authentication options or client configurations.
+        /// </remarks>
         public KeyVaultPamServicePrincipal(SecretClient client): base(Logger, client)
         {
         }
 
+        /// <summary>
+        /// Gets the name identifier for this PAM provider implementation.
+        /// </summary>
+        /// <value>The string "Azure-KeyVault-ServicePrincipal"</value>
         public override string Name => "Azure-KeyVault-ServicePrincipal";
-
-        
     }
 }

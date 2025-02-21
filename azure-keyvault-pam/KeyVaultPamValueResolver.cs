@@ -19,17 +19,49 @@ using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.Extensions.Pam.AzureKeyVault
 {
+    /// <summary>
+    /// Helper class for resolving values from configuration dictionaries and environment variables.
+    /// </summary>
     internal class KeyVaultPamValueResolver
     {
+        /// <summary>
+        /// Logger instance for diagnostic output.
+        /// </summary>
         private readonly ILogger _logger;
         
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPamValueResolver class.
+        /// </summary>
+        /// <param name="logger">Logger instance for diagnostic output</param>
+        /// <exception cref="ArgumentNullException">Thrown when logger is null</exception>
         public KeyVaultPamValueResolver(ILogger logger)
         {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             _logger = logger;
         }
         
-        internal string GetValueFromDictionaryOrEnvironment(Dictionary<string, string> dictionary, string dictionaryName, string dictionaryKey,
-            string environmentVariableName)
+        /// <summary>
+        /// Gets a value from either a dictionary or environment variable, with environment variable taking precedence.
+        /// Provides a flexible way to retrieve configuration values that can be specified in either source.
+        /// If both sources contain a value, the environment variable value is used.
+        /// If neither source contains a value, returns null.
+        /// </summary>
+        /// <param name="dictionary">Source dictionary to look up values</param>
+        /// <param name="dictionaryName">Name of dictionary for error messages and logging</param>
+        /// <param name="dictionaryKey">Key to look up in the dictionary</param>
+        /// <param name="environmentVariableName">Name of environment variable to check first</param>
+        /// <returns>The resolved value or null if not found in either location</returns>
+        /// <remarks>
+        /// The method first checks the environment variable. If found, that value is returned.
+        /// Otherwise, it checks the dictionary. If neither contains a value, returns null.
+        /// Priority order:
+        /// 1. Environment variable value if present
+        /// 2. Dictionary value if present
+        /// 3. Null if neither is found
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when dictionary parameter is null</exception>
+        internal string GetValueFromDictionaryOrEnvironment(Dictionary<string, string> dictionary,
+            string dictionaryName, string dictionaryKey, string environmentVariableName)
         {
             _logger.MethodEntry(LogLevel.Debug);
             
@@ -70,7 +102,29 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             return result;
         }
         
-        internal string GetValueFromDictionary(Dictionary<string, string> dictionary, string dictionaryName, string key, bool throwIfNotFound = true)
+        /// <summary>
+        /// Gets a value from a dictionary with optional error handling.
+        /// </summary>
+        /// <param name="dictionary">Source dictionary to look up values</param>
+        /// <param name="dictionaryName">Name of dictionary for error messages and logging</param>
+        /// <param name="key">Key to look up</param>
+        /// <param name="throwIfNotFound">Whether to throw an exception if the key is not found or empty</param>
+        /// <returns>The value from the dictionary or null if not found and throwIfNotFound is false</returns>
+        /// <remarks>
+        /// The method performs the following checks:
+        /// 1. Validates that the dictionary parameter is not null
+        /// 2. Checks if the key exists in the dictionary
+        /// 3. Verifies the value is not null or empty
+        /// 
+        /// If throwIfNotFound is true (default):
+        /// - Throws KeyVaultPamException when key is missing or value is empty
+        /// If throwIfNotFound is false:
+        /// - Returns null when key is missing or value is empty
+        /// </remarks>
+        /// <exception cref="KeyVaultPamException">Thrown when key is not found or value is empty, and throwIfNotFound is true</exception>
+        /// <exception cref="ArgumentNullException">Thrown when dictionary parameter is null</exception>
+        internal string GetValueFromDictionary(Dictionary<string, string> dictionary, string dictionaryName, 
+            string key, bool throwIfNotFound = true)
         {
             _logger.MethodEntry(LogLevel.Debug);
             _logger.LogDebug($"Getting value of key {key} from dictionary {dictionaryName}...");

@@ -22,12 +22,35 @@ using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.Extensions.Pam.AzureKeyVault
 {
+    /// <summary>
+    /// Factory class for creating and configuring Azure Key Vault SecretClient instances.
+    /// </summary>
+    /// <remarks>
+    /// This factory handles the creation of properly authenticated SecretClient instances,
+    /// supporting both service principal and default Azure credentials.
+    /// </remarks>
     public class KeyVaultClientFactory
     {
+        /// <summary>
+        /// Logger instance for diagnostic output.
+        /// </summary>
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// Helper for resolving configuration values.
+        /// </summary>
         private readonly KeyVaultPamValueResolver _resolver;
+
+        /// <summary>
+        /// Dictionary containing initialization parameters for the factory.
+        /// </summary>
         private readonly Dictionary<string, string> _initializationInfo;
 
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultClientFactory class.
+        /// </summary>
+        /// <param name="logger">Logger for diagnostic output</param>
+        /// <param name="initializationInfo">Dictionary containing initialization parameters</param>
         public KeyVaultClientFactory(ILogger logger, Dictionary<string, string> initializationInfo)
         {
             _logger = logger;
@@ -35,6 +58,22 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             _initializationInfo = initializationInfo;
         }
 
+        /// <summary>
+        /// Creates a new SecretClient instance with the configured credentials.
+        /// </summary>
+        /// <returns>Configured SecretClient instance for Azure Key Vault operations</returns>
+        /// <remarks>
+        /// The method configures a SecretClient with:
+        /// 1. The KeyVaultUri from initialization parameters
+        /// 2. Appropriate credentials based on available authentication information
+        /// 3. Custom authority host if specified
+        /// </remarks>
+        /// <exception cref="KeyVaultPamException">
+        /// Thrown when:
+        /// - KeyVaultUri is missing or invalid
+        /// - Required service principal credentials are incomplete
+        /// - Custom authority host is invalid
+        /// </exception>
         public SecretClient Create()
         {
             _logger.MethodEntry(LogLevel.Debug);
@@ -53,6 +92,16 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             return secretClient;
         }
 
+        /// <summary>
+        /// Gets the appropriate TokenCredential based on provided initialization parameters.
+        /// </summary>
+        /// <returns>A KeyValuePair containing the TokenCredential and its Type</returns>
+        /// <remarks>
+        /// The method attempts to create credentials in the following order:
+        /// 1. Service Principal credentials if TenantId, ClientId, and ClientSecret are provided
+        /// 2. DefaultAzureCredential if no service principal credentials are found
+        /// </remarks>
+        /// <exception cref="KeyVaultPamException">Thrown when service principal credentials are partially provided</exception>
         internal KeyValuePair<TokenCredential, Type> GetTokenCredentials()
         {
             _logger.MethodEntry(LogLevel.Debug);
@@ -91,6 +140,18 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             return new KeyValuePair<TokenCredential, Type>(credentials, credentialsType);
         }
 
+        /// <summary>
+        /// Resolves the Azure authority host URI based on configuration or environment variables.
+        /// </summary>
+        /// <returns>The resolved authority host URI or null for default</returns>
+        /// <remarks>
+        /// Supports the following predefined values:
+        /// - "china" for Azure China
+        /// - "government" for Azure Government
+        /// - "public" for Azure Public Cloud
+        /// Custom HTTPS URIs are also supported.
+        /// </remarks>
+        /// <exception cref="KeyVaultPamException">Thrown when custom authority host is invalid</exception>
         internal Uri GetAzureAuthorityHost()
         {
             _logger.MethodEntry(LogLevel.Debug);
@@ -124,6 +185,10 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
                     break;
                 default:
                     _logger.LogDebug("Using custom authority host.");
+                    if (!authorityHost.StartsWith("https://"))
+                    {
+                        throw new KeyVaultPamException($"Custom authority host must begin with 'https://'. Received: {authorityHost}");
+                    }
                     resolvedAuthorityHost = new Uri(authorityHost);
                     break;
             }
