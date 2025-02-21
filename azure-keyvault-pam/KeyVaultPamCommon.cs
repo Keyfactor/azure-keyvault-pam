@@ -27,12 +27,21 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         private SecretClient _secretClient;
         private readonly KeyVaultPamValueResolver _resolver;
         
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPamCommon class with a logger.
+        /// </summary>
+        /// <param name="logger">Logger for diagnostic output</param>
         protected KeyVaultPamCommon(ILogger logger)
         {
             _logger = logger;
             _resolver = new KeyVaultPamValueResolver(logger);
         }
         
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPamCommon class with a logger and pre-configured SecretClient.
+        /// </summary>
+        /// <param name="logger">Logger for diagnostic output</param>
+        /// <param name="client">Pre-configured Azure Key Vault SecretClient</param>
         protected KeyVaultPamCommon(ILogger logger, SecretClient client)
         {
             _logger = logger;
@@ -41,18 +50,12 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         }
         
         /// <summary>
-        ///     Retrieves a password value from Azure Key Vault.
+        /// Synchronously retrieves a password value from Azure Key Vault.
         /// </summary>
-        /// <param name="instanceParameters">
-        ///     A dictionary of strings for instanceParameters. This dictionary must
-        ///     contain a value for key `SecretId`.
-        /// </param>
-        /// <param name="initializationInfo">
-        ///     A dictionary of strings for initializationInfo. If the class default constructor
-        ///     is used, this dictionary must contain a value for `KeyVaultUri`.
-        /// </param>
-        /// <exception cref="KeyVaultPamException">Thrown when a required dictionary value is missing.</exception>
-        /// <returns>A password from Azure Key Vault.</returns>
+        /// <param name="instanceParameters"> Dictionary containing instance-specific parameters</param>
+        /// <param name="initializationInfo">Dictionary containing initialization parameters</param>
+        /// <exception cref="KeyVaultPamException">Thrown when a required values are missing</exception>
+        /// <returns>A retrieved secret value</returns>
         public string GetPassword(Dictionary<string, string> instanceParameters,
             Dictionary<string, string> initializationInfo)
         {
@@ -67,8 +70,24 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             return password;
         }
 
+        /// <summary>
+        /// The name identifier for the PAM provider implementation.
+        /// </summary>
         public abstract string Name { get; }
         
+        /// <summary>
+        /// Internal method to retrieve a secret from Azure Key Vault.
+        /// </summary>
+        /// <param name="instanceParameters">Dictionary containing the SecretId</param>
+        /// <param name="initializationInfo">Dictionary containing KeyVault configuration</param>
+        /// <returns>The secret value from Azure Key Vault</returns>
+        /// <exception cref="KeyVaultPamException">
+        /// Thrown when:
+        /// - Required configuration is missing
+        /// - KeyVaultUri is invalid
+        /// - KeyVault URI does not match expected format
+        /// </exception>
+        /// <exception cref="Azure.RequestFailedException">Thrown when the Azure Key Vault request fails</exception>
         private async Task<string> GetAzureKeyVaultSecret(Dictionary<string, string> instanceParameters,
             Dictionary<string, string> initializationInfo)
         {

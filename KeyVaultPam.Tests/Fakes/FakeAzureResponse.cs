@@ -18,7 +18,10 @@ using Azure.Core;
 
 namespace KeyVaultPamTests.Fakes;
 
-public sealed class FakeAzureResponse : Response
+/// <summary>
+/// A fake implementation of an Azure response. Used for mocking a response from Azure SDK.
+/// </summary>
+internal sealed class FakeAzureResponse : Response
 {
     public override int Status => throw new NotImplementedException();
 

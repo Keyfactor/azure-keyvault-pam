@@ -18,14 +18,32 @@ using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.Extensions.Pam.AzureKeyVault
 {
+    /// <summary>
+    /// Default Azure Key Vault PAM provider using DefaultAzureCredential authentication.
+    /// </summary>
+    /// <remarks>
+    /// This is the recommended provider as it supports multiple authentication methods:
+    /// - Managed Identity
+    /// - Environment Variables
+    /// - Visual Studio Credentials
+    /// - Azure CLI Credentials
+    /// - Interactive Browser Login
+    /// </remarks>
     public class KeyVaultPam : KeyVaultPamCommon
     {
         private static readonly ILogger Logger = LogHandler.GetClassLogger<KeyVaultPam>();
 
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPam class using default authentication.
+        /// </summary>
         public KeyVaultPam(): base(Logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the KeyVaultPam class with a pre-configured SecretClient.
+        /// </summary>
+        /// <param name="client">Pre-configured Azure Key Vault SecretClient</param>
         public KeyVaultPam(SecretClient client): base(Logger, client)
         {
         }
