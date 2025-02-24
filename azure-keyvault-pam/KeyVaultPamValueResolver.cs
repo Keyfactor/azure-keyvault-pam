@@ -50,6 +50,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         /// 2. Dictionary value if present
         /// 3. Null if neither is found
         /// </remarks>
+        /// <exception cref="KeyVaultPamException">Thrown when environment variable or dictionary value could not be found.</exception>
         internal string GetValueFromDictionaryOrEnvironment(Dictionary<string, string> dictionary, string dictionaryName, string dictionaryKey,
             string environmentVariableName)
         {
