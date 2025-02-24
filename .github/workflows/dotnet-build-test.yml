@@ -9,8 +9,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Install dotnet
-        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # 4.3.0
+      - name: Setup dotnet
+        uses: keyfactor/setup-dotnet@5d1464d5da459f3d7085106d52e499f4dc5d0f59 # v4
         with:
           dotnet-version: '8.0.x'
 
