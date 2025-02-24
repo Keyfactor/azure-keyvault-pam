@@ -3,7 +3,7 @@
   "integration_type": "pam",
   "name": "Azure Key Vault PAM Provider",
   "status": "prototype",
-  "support_level": "kf-community",
+  "support_level": "kf-supported",
   "update_catalog": false,
   "link_github": false,
   "description": "The Azure Key Vault PAM Provider allows for the retrieval of stored credentials from an Azure Key Vault secret. A valid Key Vault URL is required. Currently in dev, a work in progress,",
