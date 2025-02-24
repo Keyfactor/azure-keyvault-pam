@@ -1,0 +1,24 @@
+name: Build and Test Project
+on:
+  pull_request:
+
+jobs:
+  dotnet-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Install dotnet
+        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # 4.3.0
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore NuGet Packages
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build
+
+      - name: Test project
+        run: dotnet test
