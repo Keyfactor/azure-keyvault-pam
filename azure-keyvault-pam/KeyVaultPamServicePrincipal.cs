@@ -56,7 +56,5 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         }
 
         public override string Name => "Azure-KeyVault-ServicePrincipal";
-
-        
     }
 }
