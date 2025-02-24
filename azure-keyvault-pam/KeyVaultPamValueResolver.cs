@@ -64,22 +64,21 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             
             if (string.IsNullOrEmpty(envValue) && string.IsNullOrEmpty(dictionaryValue))
             {
-                _logger.LogDebug("No value found in environment variable or dictionary. Defaulting to null.");
+                string message = $"No value was found for environment variable {environmentVariableName} or for key {dictionaryKey} in dictionary {dictionaryName}.";
+                _logger.LogError(message);
+                throw new KeyVaultPamException(message);
             }
-
-            if (string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
+            else if (string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
             {
                 _logger.LogDebug($"Value not found in dictionary but found in dictionary. Returning value from dictionary.");
                 result = dictionaryValue;
             }
-
-            if (!string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
+            else if (!string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
             {
                 _logger.LogDebug($"Value found in environment variable and dictionary. Returning value from environment variable.");
                 result = envValue;
             }
-            
-            if (!string.IsNullOrEmpty(envValue) && string.IsNullOrEmpty(dictionaryValue))
+            else 
             {
                 _logger.LogDebug($"Value found in environment variable and not in dictionary. Returning value from environment variable.");
                 result = envValue;

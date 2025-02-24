@@ -31,7 +31,7 @@ public class KeyVaultClientFactoryTests
     
     public KeyVaultClientFactoryTests()
     {
-        Environment.SetEnvironmentVariable("AZURE_AUTHORITY_HOST", null);
+        Environment.SetEnvironmentVariable("AZURE_AUTHORITY_HOST", MockAuthorityHost);
         
         _factory = new KeyVaultClientFactory(_logger, _initializationInfo);
     }
@@ -53,10 +53,11 @@ public class KeyVaultClientFactoryTests
     #region GetAzureAuthorityHost
 
     [Fact]
-    public void GetAzureAuthorityHost_WhenNoEnvironmentVariableIsPresent_AndNoInitializationInfoIsPresent_ReturnsNull()
+    public void GetAzureAuthorityHost_WhenNoEnvironmentVariableIsPresent_AndNoInitializationInfoIsPresent_ThrowsException()
     {
-        Uri result = _factory.GetAzureAuthorityHost();
-        Assert.Null(result);
+        Environment.SetEnvironmentVariable("AZURE_AUTHORITY_HOST", null);
+        
+        Assert.Throws<KeyVaultPamException>(() => _factory.GetAzureAuthorityHost());
     }
     
     [Fact]
@@ -98,6 +99,8 @@ public class KeyVaultClientFactoryTests
     [Fact]
     public void GetAzureAuthorityHost_WhenNoEnvironmentVariableIsPresent_AndInitializationInfoIsSet_UsesInitializationInfoValue()
     {
+        Environment.SetEnvironmentVariable("AZURE_AUTHORITY_HOST", null);
+        
         _initializationInfo.Add("AuthorityHost", "public");
         
         Uri result = _factory.GetAzureAuthorityHost();
