@@ -1,0 +1,27 @@
+name: Build and Test Project
+on:
+  pull_request:
+
+jobs:
+  dotnet-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup dotnet
+        uses: keyfactor/setup-dotnet@5d1464d5da459f3d7085106d52e499f4dc5d0f59 # v4
+        with:
+          dotnet-version: '8.0.x'
+      
+      - name: Add dotnet nuget source
+        run: dotnet nuget add source https://nuget.pkg.github.com/Keyfactor/index.json -n github -u ${{ github.actor }} -p ${{ secrets.V2BUILDTOKEN }} --store-password-in-clear-text
+
+      - name: Restore NuGet Packages
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build
+
+      - name: Test project
+        run: dotnet test
