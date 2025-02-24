@@ -13,7 +13,6 @@ jobs:
         uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # 4.3.0
         with:
           dotnet-version: '8.0.x'
-          cache: true
 
       - name: Restore NuGet Packages
         run: dotnet restore
