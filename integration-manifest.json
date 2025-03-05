@@ -1,19 +1,95 @@
 {
-  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+  "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
   "integration_type": "pam",
-  "name": "PAM Integration Template",
+  "name": "Azure Key Vault PAM Provider",
   "status": "prototype",
-  "description": "This project is meant to be a template to quickly build a basic integration product build. Currently in dev, a work in progress,",
-  "support_level": "kf-community",
-  "link_github": false,
+  "support_level": "kf-supported",
   "update_catalog": false,
-  "release_dir": "UPDATE-THIS-WITH-PATH-TO-BINARY-BUILD-FOLDER",
+  "link_github": false,
+  "description": "The Azure Key Vault PAM Provider allows for the retrieval of stored credentials from an Azure Key Vault secret. A valid Key Vault URL is required. Currently in dev, a work in progress,",
   "about": {
     "pam": {
-      "assemblyName": "changeme.assemblyName",
-      "fullyQualifiedClassName": "changeme.fullyQualifiedClassName",
-      "dbName": "changeme.dbName"
+      "providerName": "Azure Key Vault PAM Provider",
+      "assemblyName": "azure-keyvault-pam",
+      "dbName": "Azure-KeyVault",
+      "fullyQualifiedClassName": "Keyfactor.Extensions.Pam.AzureKeyVault.KeyVaultPam",
+      "pam_types": {
+        "Azure-KeyVault": {
+          "Name": "Azure-KeyVault",
+          "Parameters": [
+            {
+              "Name": "KeyVaultUri",
+              "DisplayName": "Key Vault URI",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "URI for your Azure Key Vault"
+            },
+            {
+              "Name": "AuthorityHost",
+              "DisplayName": "Authority Host",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "Authority host of your Azure infrastructure"
+            },
+            {
+              "Name": "SecretId",
+              "DisplayName": "Secret ID",
+              "DataType": 1,
+              "InstanceLevel": true,
+              "Description": "Name of your secret in Azure Key Vault"
+            }
+          ]
+        },
+        "Azure-KeyVault-ServicePrincipal": {
+          "Name": "Azure-KeyVault-ServicePrincipal",
+          "Parameters": [
+            {
+              "Name": "KeyVaultUri",
+              "DisplayName": "Key Vault URI",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "URI for your Azure Key Vault"
+            },
+            {
+              "Name": "AuthorityHost",
+              "DisplayName": "Authority Host",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "Authority host of your Azure infrastructure"
+            },
+            {
+              "Name": "TenantId",
+              "DisplayName": "Tenant ID",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "Tenant or directory ID in Azure"
+            },
+            {
+              "Name": "ClientId",
+              "DisplayName": "Client ID",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "Application ID in Entra AD"
+            },
+            {
+              "Name": "ClientSecret",
+              "DisplayName": "ClientSecret",
+              "DataType": 2,
+              "InstanceLevel": false,
+              "Description": "Client secret for your application ID"
+            },
+            {
+              "Name": "SecretId",
+              "DisplayName": "Secret ID",
+              "DataType": 1,
+              "InstanceLevel": true,
+              "Description": "Name of your secret in Azure Key Vault"
+            }
+          ]
+        }
+      }
     }
-  }
+  },
+  "release_dir": "azure-keyvault-pam/bin/Release/netstandard2.0"
 }
 
