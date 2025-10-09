@@ -2,10 +2,10 @@
   "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
   "integration_type": "pam",
   "name": "Azure Key Vault PAM Provider",
-  "status": "prototype",
+  "status": "production",
   "support_level": "kf-supported",
-  "update_catalog": false,
-  "link_github": false,
+  "update_catalog": true,
+  "link_github": true,
   "description": "The Azure Key Vault PAM Provider allows for the retrieval of stored credentials from an Azure Key Vault secret. A valid Key Vault URL is required. Currently in dev, a work in progress,",
   "about": {
     "pam": {
@@ -90,6 +90,7 @@
       }
     }
   },
-  "release_dir": "azure-keyvault-pam/bin/Release/netstandard2.0"
+  "release_dir": "azure-keyvault-pam/bin/Release/netstandard2.0",
+  "release_project": "azure-keyvault-pam\\azure-keyvault-pam.csproj"
 }
 
