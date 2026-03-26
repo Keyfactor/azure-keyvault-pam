@@ -5,9 +5,9 @@
 <p align="center">
   <!-- Badges -->
 <img src="https://img.shields.io/badge/integration_status-production-3D1973?style=flat-square" alt="Integration Status: production" />
-<a href="https://github.com/Keyfactor/Azure Key Vault PAM Provider/releases"><img src="https://img.shields.io/github/v/release/Keyfactor/Azure Key Vault PAM Provider?style=flat-square" alt="Release" /></a>
-<img src="https://img.shields.io/github/issues/Keyfactor/Azure Key Vault PAM Provider?style=flat-square" alt="Issues" />
-<img src="https://img.shields.io/github/downloads/Keyfactor/Azure Key Vault PAM Provider/total?style=flat-square&label=downloads&color=28B905" alt="GitHub Downloads (all assets, all releases)" />
+<a href="https://github.com/Keyfactor/azure-kevyault-pam/releases"><img src="https://img.shields.io/github/v/release/Keyfactor/azure-kevyault-pam?style=flat-square" alt="Release" /></a>
+<img src="https://img.shields.io/github/issues/Keyfactor/azure-kevyault-pam?style=flat-square" alt="Issues" />
+<img src="https://img.shields.io/github/downloads/Keyfactor/azure-kevyault-pam/total?style=flat-square&label=downloads&color=28B905" alt="GitHub Downloads (all assets, all releases)" />
 </p>
 
 <p align="center">
@@ -142,7 +142,7 @@ __Instance Parameters for each retrieved secret field__
 ##### Using `kfutil`
 ```shell
 # Azure-KeyVault
-kfutil pam types-create -r Azure Key Vault PAM Provider -n Azure-KeyVault
+kfutil pam types-create -r azure-kevyault-pam -n Azure-KeyVault
 ```
 
 ##### Using the API
@@ -222,7 +222,7 @@ __Instance Parameters for each retrieved secret field__
 ##### Using `kfutil`
 ```shell
 # Azure-KeyVault-ServicePrincipal
-kfutil pam types-create -r Azure Key Vault PAM Provider -n Azure-KeyVault-ServicePrincipal
+kfutil pam types-create -r azure-kevyault-pam -n Azure-KeyVault-ServicePrincipal
 ```
 
 ##### Using the API
