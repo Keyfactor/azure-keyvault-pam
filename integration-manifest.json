@@ -7,6 +7,8 @@
   "update_catalog": false,
   "link_github": false,
   "description": "The Azure Key Vault PAM Provider allows for the retrieval of stored credentials from an Azure Key Vault secret. A valid Key Vault URL is required. Currently in dev, a work in progress,",
+  "release_dir": "azure-keyvault-pam/bin/Release",
+  "release_project": "azure-keyvault-pam/azure-keyvault-pam.csproj",
   "about": {
     "pam": {
       "providerName": "Azure Key Vault PAM Provider",
@@ -89,7 +91,6 @@
         }
       }
     }
-  },
-  "release_dir": "azure-keyvault-pam/bin/Release"
+  }
 }
 
