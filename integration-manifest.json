@@ -11,7 +11,7 @@
   "release_project": "azure-keyvault-pam/azure-keyvault-pam.csproj",
   "about": {
     "pam": {
-      "providerName": "Azure Key Vault PAM Provider",
+      "providerName": "azure-keyvault-pam",
       "assemblyName": "azure-keyvault-pam",
       "dbName": "Azure-KeyVault",
       "fullyQualifiedClassName": "Keyfactor.Extensions.Pam.AzureKeyVault.KeyVaultPam",
