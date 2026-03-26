@@ -76,18 +76,18 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         /// </exception>
         public SecretClient Create()
         {
-            _logger.MethodEntry(LogLevel.Debug);
+            _logger.MethodEntry();
 
-            _logger.LogDebug("Instantiating new instance of SecretClient...");
+            _logger.LogTrace("Instantiating new instance of SecretClient...");
 
             string keyVaultUri = _resolver.GetValueFromDictionary(_initializationInfo, "initializationInfo", "KeyVaultUri");
             _logger.LogDebug($"KeyVaultUri: {keyVaultUri}");
 
             SecretClient secretClient = new SecretClient(new Uri(keyVaultUri), GetTokenCredentials().Key);
 
-            _logger.LogDebug("Finished instantiating SecretClient.");
+            _logger.LogTrace("Finished instantiating SecretClient.");
 
-            _logger.MethodExit(LogLevel.Debug);
+            _logger.MethodExit();
 
             return secretClient;
         }
@@ -104,9 +104,9 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         /// <exception cref="KeyVaultPamException">Thrown when service principal credentials are partially provided</exception>
         internal KeyValuePair<TokenCredential, Type> GetTokenCredentials()
         {
-            _logger.MethodEntry(LogLevel.Debug);
+            _logger.MethodEntry();
             
-            _logger.LogDebug("Resolving Azure client credentials...");
+            _logger.LogTrace("Resolving Azure client credentials...");
 
             TokenCredentialOptions options = new DefaultAzureCredentialOptions()
             {
@@ -125,6 +125,8 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
                 string clientId = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", "ClientId", "AZURE_CLIENT_ID");
                 string clientSecret = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", "ClientSecret", "AZURE_CLIENT_SECRET");
                 
+                _logger.LogDebug($"Tenant ID: {tenantId}, Client ID: {clientId}, Client Secret: [REDACTED]");
+                
                 credentials = new ClientSecretCredential(tenantId, clientId, clientSecret, options);
                 credentialsType = typeof(ClientSecretCredential);
             }
@@ -133,9 +135,9 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
                 _logger.LogDebug($"Using default client credentials.");
             }
             
-            _logger.LogDebug("Finished resolving Azure client credentials...");
+            _logger.LogTrace("Finished resolving Azure client credentials...");
             
-            _logger.MethodExit(LogLevel.Debug);
+            _logger.MethodExit();
 
             return new KeyValuePair<TokenCredential, Type>(credentials, credentialsType);
         }
@@ -154,7 +156,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         /// <exception cref="KeyVaultPamException">Thrown when custom authority host is invalid</exception>
         internal Uri GetAzureAuthorityHost()
         {
-            _logger.MethodEntry(LogLevel.Debug);
+            _logger.MethodEntry();
             
             string authorityHost = _resolver.GetValueFromDictionaryOrEnvironment(_initializationInfo, "initializationInfo", 
                 "AuthorityHost", "AZURE_AUTHORITY_HOST");
@@ -189,7 +191,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
                     break;
             }
 
-            _logger.MethodExit(LogLevel.Debug);
+            _logger.MethodExit();
 
             return resolvedAuthorityHost;
         }
