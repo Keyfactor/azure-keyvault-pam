@@ -2,11 +2,13 @@
   "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
   "integration_type": "pam",
   "name": "Azure Key Vault PAM Provider",
-  "status": "prototype",
+  "status": "production",
   "support_level": "kf-supported",
-  "update_catalog": false,
-  "link_github": false,
+  "update_catalog": true,
+  "link_github": true,
   "description": "The Azure Key Vault PAM Provider allows for the retrieval of stored credentials from an Azure Key Vault secret. A valid Key Vault URL is required. Currently in dev, a work in progress,",
+  "release_dir": "azure-keyvault-pam/bin/Release",
+  "release_project": "azure-keyvault-pam/azure-keyvault-pam.csproj",
   "about": {
     "pam": {
       "providerName": "Azure Key Vault PAM Provider",
@@ -69,7 +71,7 @@
               "DisplayName": "Client ID",
               "DataType": 1,
               "InstanceLevel": false,
-              "Description": "Application ID in Entra AD"
+              "Description": "Application ID in Microsoft Entra ID"
             },
             {
               "Name": "ClientSecret",
@@ -89,7 +91,6 @@
         }
       }
     }
-  },
-  "release_dir": "azure-keyvault-pam/bin/Release/netstandard2.0"
+  }
 }
 
