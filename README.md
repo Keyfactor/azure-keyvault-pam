@@ -209,7 +209,7 @@ __Initialization Parameters for each defined PAM Provider instance__
 | KeyVaultUri | Azure Key Vault URI | The unique auto generated URI for your Azure KeyVault. |
 | AuthorityHost | Authority Host | The authority host to authenticate against. For most use cases, this will simply be `public`. Please refer to the **Authority Host** section for more information on this parameter. If `AZURE_AUTHORITY_HOST` is a defined environment variable, it will override this value. |
 | TenantId | Tenant ID | The tenant (directory) ID in Azure the Azure Key Vault belongs to. If `AZURE_TENANT_ID` is a defined environment variable, it will override this value. |
-| ClientId | Client ID | The application ID in Entra AD. If `AZURE_CLIENT_ID` is a defined environment variable, it will override this value. |
+| ClientId | Client ID | The application ID in Microsoft Entra ID. If `AZURE_CLIENT_ID` is a defined environment variable, it will override this value. |
 | ClientSecret | Client Secret | The client secret for the application ID. If `AZURE_CLIENT_SECRET` is a defined environment variable, it will override this value. |
 
 __Instance Parameters for each retrieved secret field__
@@ -256,7 +256,7 @@ kfutil pam types-create -r Azure Key Vault PAM Provider -n Azure-KeyVault-Servic
       "DisplayName": "Client ID",
       "DataType": 1,
       "InstanceLevel": false,
-      "Description": "Application ID in Entra AD"
+      "Description": "Application ID in Microsoft Entra ID"
     },
     {
       "Name": "ClientSecret",
@@ -316,7 +316,7 @@ The entire contents (which includes all library dependencies) should be copied w
 | KeyVaultUri | Key Vault URI | URI for your Azure Key Vault |
 | AuthorityHost | Authority Host | Authority host of your Azure infrastructure |
 | TenantId | Tenant ID | Tenant or directory ID in Azure |
-| ClientId | Client ID | Application ID in Entra AD |
+| ClientId | Client ID | Application ID in Microsoft Entra ID |
 | ClientSecret | ClientSecret | Client secret for your application ID |
 
 #### From a Universal Orchestrator Host (Remote)
