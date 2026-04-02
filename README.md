@@ -36,6 +36,75 @@ Communication with Azure Key Vault is supported via assuming a role on your mach
 
 This PAM Provider supports retrieving all fields available in Azure Key Vault, such as usernames and passwords. It can be installed on either the Keyfactor Command Platform or on Universal Orchestrators.
 
+## Azure KeyVault vs Azure KeyVault ServicePrincipal
+
+There are two Azure Key Vault PAM Providers available: `Azure-KeyVault` and `Azure-KeyVault-ServicePrincipal`.
+
+Here's a matrix explaining the differences between the two extensions:
+
+| PAM Type | Recommended Use Case | manifest.json Configuration | 
+|--|--|--|
+| Azure-KeyVault | Recommended if Orchestrator or machine can assume an Azure role with a managed identity or read credentials from environment variables to authenticate with Azure Key Vault. [How to setup managed identity access to KeyVault](https://learn.microsoft.com/en-us/azure/key-vault/general/authentication) | - |
+| Azure-KeyVault-ServicePrincipal | Recommended if you want to directly specify service principal credentials in your PAM provider configuration to authenticate with Azure Key Vault. Useful if Orchestrator or machine cannot assume an Azure role with managed identity or have ability to modify environment variables. [How to create an Azure service principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) | Replace `manifest.json` with contents of `ServicePrincipal-manifest.json` |
+
+## Environment Variable Configuration
+
+Both PAM providers support authenticating with Azure Key Vault via environment variables. If the appropriate environment variables are configured, the PAM provider will read credentials from the environment variables to authenticate with Azure Key Vault. Environment variables will take precedence over the initialization parameters (i.e. `Azure-KeyVault-ServicePrincipal`). The supported environment variables for both extensions are:
+
+| Environment Variable | Description |
+|--|--|
+| AZURE_CLIENT_ID | The application (client) ID of an Azure AD application. |
+| AZURE_TENANT_ID | The tenant (directory) ID in Azure the Azure Key Vault belongs to. |
+| AZURE_CLIENT_SECRET | The client secret for the Azure AD application. |
+| AZURE_AUTHORITY_HOST | The authority host to authenticate against. For most use cases, this will simply be `public`. Please refer to the [Authority Hosts](#authority-hosts) section for more information on this parameter. |
+
+## Authority Hosts
+
+The Azure Key Vault PAM provider requires an **Authority Host** to be defined. The **Authority Host** is the endpoint with which Azure will authenticate against. There are predefined Azure Authority Hosts the PAM Provider library will resolve to. The value and resolved Authority Host can be found below:
+
+|Value|Authority Host|
+|--|--|
+|china|Azure China|
+|government|Azure Government|
+|public|Azure Public Cloud|
+
+For most use cases, `public` will be an acceptable **Authority Host** value for your PAM provider. You may also provide a custom authority host not defined in the table above, but the authority host ***must*** begin with `https://`, for example `https://custom.microsoftonline.com`.
+
+Authority Hosts may also be specified via the `AZURE_AUTHORITY_HOST` environment variable. If this environment variable is configured, it will override the value supplied to the PAM provider.
+
+For more information on Azure authority hosts, please review [the Azure SDK documentation](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.azureauthorityhosts?view=azure-dotnet#properties).
+
+## Example Setup of Azure Key Vault PAM Provider
+
+This example shows setting up a service principal access to an Azure Key Vault. This example only covers using [RBAC / Access Control (IAM)](https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide?tabs=azure-cli), but you can also use [Access Policies](https://learn.microsoft.com/en-us/azure/key-vault/general/assign-access-policy?tabs=azure-portal) to configure access to your Key Vault.
+
+First, within Entra ID, create a service principal by creating an app registration. Once the app registration is created, create a client secret for the app registration and note the client secret value, application (client) ID, and tenant ID.
+
+![Register App](images/setup/register.png)
+![Client ID and Tenant ID](images/setup/clientid.png)
+
+Navigate to **Certificates & Secrets** and create a new client secret. Note the value of the client secret as it will not be shown again after you navigate away from the page. **Ignore the Secret ID shown on this page as it is not used for PAM provider configuration.**
+
+![Client Secret](images/setup/clientsecret.png)
+
+Now, navigate to your Azure Key Vault instance. Under the **Access Control (IAM)** section, add a new role assignment. You can assign the "Key Vault Secrets User" role, which will allow the service principal to read secrets from the Key Vault. Assign this role to the service principal you created in the previous step.
+
+
+![Role Assignment](images/setup/roleassignment.png)
+
+Note the Key Vault URI from the Key Vault's overview page as you will need it for PAM provider configuration.
+
+![Key Vault URI](images/setup/keyvault.png)
+
+Next, add a secret to your Key Vault or use an existing secret. Note the name of the secret as you will need it for PAM provider configuration (Secret ID).
+
+![Secret](images/setup/secret.png)
+
+Finally, configure your PAM provider with the appropriate initialization and instance parameters as outlined in the [Initialization and Instance Parameters for Extension](#initialization-and-instance-parameters-for-extension) section. If you are using the `Azure-KeyVault-ServicePrincipal` PAM provider, you can directly input the service principal credentials in the initialization parameters. If you are using the `Azure-KeyVault` PAM provider, you can set the service principal credentials as environment variables on your machine or Orchestrator.
+
+![PAM Provider](images/setup/pam-provider.png)
+![PAM Usage](images/setup/pam-usage.png)
+
 ## Support
 The Azure Key Vault PAM Provider is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com. 
 
@@ -96,22 +165,6 @@ The Azure Key Vault PAM Provider implements 2 PAM Types. Depending on your use c
    | :---: | :---: | --- |
    | SecretId | Secret Name | The name of the secret you assigned in Azure Key Vault. |
 
-   ### Authority Hosts
-
-   The Azure Key Vault PAM provider requires an **Authority Host** to be defined. The **Authority Host** is the endpoint with which Azure will authenticate against. There are predefined Azure Authority Hosts the PAM Provider library will resolve to. The value and resolved Authority Host can be found below:
-
-   |Value|Authority Host|
-   |--|--|
-   |china|Azure China|
-   |government|Azure Government|
-   |public|Azure Public Cloud|
-
-   For most use cases, `public` will be an acceptable **Authority Host** value for your PAM provider. You may also provide a custom authority host not defined in the table above, but the authority host ***must*** begin with `https://`, for example `https://custom.microsoftonline.com`.
-
-   Authority Hosts may also be specified via the `AZURE_AUTHORITY_HOST` environment variable. If this environment variable is configured, it will override the value supplied to the PAM provider.
-
-   For more information on Azure authority hosts, please review [the Azure SDK documentation](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.azureauthorityhosts?view=azure-dotnet#properties).
-
 #### Create PAM type in Keyfactor Command
 
 
@@ -159,95 +212,13 @@ Below is the payload to `POST` to the Keyfactor Command API
 #### Install PAM provider on Keyfactor Command Host (Local)
 
 
-
-1. On the server that hosts Keyfactor Command, download and unzip the latest release of the Azure Key Vault PAM Provider from the [Releases](../../releases) page.
-
-2. Copy the assemblies to the appropriate directories on the Keyfactor Command server:
-
-    <details><summary>Keyfactor Command 11+</summary>
-
-    1. Copy the unzipped assemblies to each of the following directories:
-
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\Extensions\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\Extensions\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\Extensions\azure-keyvault-pam`
-
-    </details>
-
-    <details><summary>Keyfactor Command 10</summary>
-
-    1. Copy the assemblies to each of the following directories:
-    
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\bin\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\bin\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\bin\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\Service\azure-keyvault-pam`
-
-    2. Open a text editor on the Keyfactor Command server as an administrator and open the `web.config` file located in the `WebAgentServices` directory.
-
-    3. In the `web.config` file, locate the `<container> </container>` section and add the following registration:
-
-        ```xml
-        <container>
-            ...
-            <!--The following are PAM Provider registrations. Uncomment them to use them in the Keyfactor Product:-->
-            
-            <!--Add the following line exactly to register the PAM Provider-->
-            <register type="IPAMProvider" mapTo="Keyfactor.Extensions.Pam.AzureKeyVault.KeyVaultPam, Keyfactor.Command.PAMProviders" name="Azure-KeyVault" />
-        </container>
-        ```
-
-    4. Repeat steps 2 and 3 for each of the directories listed in step 1. The configuration files are located in the following paths by default:
-
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\web.config`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\web.config`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\web.config`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\Service\CMSTimerService.exe.config`
-
-    </details>
-
-3. Restart the Keyfactor Command services (`iisreset`).
-
-
+('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Modify your `manifest.json`, updating the `InitializationInfo` section with the appropriate values.',)
 
 
 #### Install PAM provider on a Universal Orchestrator Host (Remote)
 
 
-1. Install the Azure Key Vault PAM Provider assemblies.
-
-    * **Using kfutil**: On the server that that hosts the Universal Orchestrator, run the following command:
-
-        ```shell
-        # Windows Server
-        kfutil orchestrator extension -e azure-keyvault-pam@latest --out "C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions"
-
-        # Linux
-        kfutil orchestrator extension -e azure-keyvault-pam@latest --out "/opt/keyfactor/orchestrator/extensions"
-        ```
-
-    * **Manually**: Download the latest release of the Azure Key Vault PAM Provider from the [Releases](../../releases) page. Extract the contents of the archive to:
-
-        * **Windows Server**: `C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions\azure-keyvault-pam`
-        * **Linux**: `/opt/keyfactor/orchestrator/extensions/azure-keyvault-pam`
-
-2. Included in the release is a `manifest.json` file that contains the following object:
-    ```json
-
-    {
-        "Keyfactor:PAMProviders:Azure-KeyVault:InitializationInfo": {
-            "KeyVaultUri": "https://myvault.vault.azure.net",
-            "AuthorityHost": "public"
-        }
-    }
-
-    ```
-
-    Populate the fields in this object with credentials and configuration data collected in the [requirements](docs/azure-keyvault.md#requirements) section.
-
-3. Restart the Universal Orchestrator service.
-
-
+('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension.',)
 
 
 
@@ -283,29 +254,13 @@ Below is the payload to `POST` to the Keyfactor Command API
    | KeyVaultUri | Azure Key Vault URI | The unique auto generated URI for your Azure KeyVault. |
    | AuthorityHost | Authority Host | The authority host to authenticate against. For most use cases, this will simply be `public`. Please refer to the **Authority Host** section for more information on this parameter. If `AZURE_AUTHORITY_HOST` is a defined environment variable, it will override this value. |
    | TenantId | Tenant ID | The tenant (directory) ID in Azure the Azure Key Vault belongs to. If `AZURE_TENANT_ID` is a defined environment variable, it will override this value. |
-   | ClientId | Client ID | The application ID in Entra AD. If `AZURE_CLIENT_ID` is a defined environment variable, it will override this value. |
+   | ClientId | Client ID | The application ID in Microsoft Entra ID. If `AZURE_CLIENT_ID` is a defined environment variable, it will override this value. |
    | ClientSecret | Client Secret | The client secret for the application ID. If `AZURE_CLIENT_SECRET` is a defined environment variable, it will override this value. |
 
    __Instance Parameters for each retrieved secret field__
    | Instance parameter | Display Name | Description |
    | :---: | :---: | --- |
    | SecretId | Secret Name | The name of the secret you assigned in Azure Key Vault. |
-
-   ### Authority Hosts
-
-   The Azure Key Vault PAM provider requires an **Authority Host** to be defined. The **Authority Host** is the endpoint with which Azure will authenticate against. There are predefined Azure Authority Hosts the PAM Provider library will resolve to. The value and resolved Authority Host can be found below:
-
-   |Value|Authority Host|
-   |--|--|
-   |china|Azure China|
-   |government|Azure Government|
-   |public|Azure Public Cloud|
-
-   For most use cases, `public` will be an acceptable **Authority Host** value for your PAM provider. You may also provide a custom authority host not defined in the table above, but the authority host ***must*** begin with `https://`, for example `https://custom.microsoftonline.com`.
-
-   Authority Hosts may also be specified via the `AZURE_AUTHORITY_HOST` environment variable. If this environment variable is configured, it will override the value supplied to the PAM provider.
-
-   For more information on Azure authority hosts, please review [the Azure SDK documentation](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.azureauthorityhosts?view=azure-dotnet#properties).
 
 #### Create PAM type in Keyfactor Command
 
@@ -352,7 +307,7 @@ Below is the payload to `POST` to the Keyfactor Command API
             "DisplayName": "Client ID",
             "DataType": 1,
             "InstanceLevel": false,
-            "Description": "Application ID in Entra AD"
+            "Description": "Application ID in Microsoft Entra ID"
         },
         {
             "Name": "ClientSecret",
@@ -375,95 +330,13 @@ Below is the payload to `POST` to the Keyfactor Command API
 #### Install PAM provider on Keyfactor Command Host (Local)
 
 
-
-1. On the server that hosts Keyfactor Command, download and unzip the latest release of the Azure Key Vault PAM Provider from the [Releases](../../releases) page.
-
-2. Copy the assemblies to the appropriate directories on the Keyfactor Command server:
-
-    <details><summary>Keyfactor Command 11+</summary>
-
-    1. Copy the unzipped assemblies to each of the following directories:
-
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\Extensions\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\Extensions\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\Extensions\azure-keyvault-pam`
-
-    </details>
-
-    <details><summary>Keyfactor Command 10</summary>
-
-    1. Copy the assemblies to each of the following directories:
-    
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\bin\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\bin\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\bin\azure-keyvault-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\Service\azure-keyvault-pam`
-
-    2. Open a text editor on the Keyfactor Command server as an administrator and open the `web.config` file located in the `WebAgentServices` directory.
-
-    3. In the `web.config` file, locate the `<container> </container>` section and add the following registration:
-
-        ```xml
-        <container>
-            ...
-            <!--The following are PAM Provider registrations. Uncomment them to use them in the Keyfactor Product:-->
-            
-            <!--Add the following line exactly to register the PAM Provider-->
-            <register type="IPAMProvider" mapTo="Keyfactor.Extensions.Pam.AzureKeyVault.KeyVaultPam, Keyfactor.Command.PAMProviders" name="Azure-KeyVault-ServicePrincipal" />
-        </container>
-        ```
-
-    4. Repeat steps 2 and 3 for each of the directories listed in step 1. The configuration files are located in the following paths by default:
-
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\web.config`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\web.config`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\web.config`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\Service\CMSTimerService.exe.config`
-
-    </details>
-
-3. Restart the Keyfactor Command services (`iisreset`).
-
-
+('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file, and then update the `InitializationInfo` section with the appropriate values.',)
 
 
 #### Install PAM provider on a Universal Orchestrator Host (Remote)
 
 
-1. Install the Azure Key Vault PAM Provider assemblies.
-
-    * **Using kfutil**: On the server that that hosts the Universal Orchestrator, run the following command:
-
-        ```shell
-        # Windows Server
-        kfutil orchestrator extension -e azure-keyvault-pam@latest --out "C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions"
-
-        # Linux
-        kfutil orchestrator extension -e azure-keyvault-pam@latest --out "/opt/keyfactor/orchestrator/extensions"
-        ```
-
-    * **Manually**: Download the latest release of the Azure Key Vault PAM Provider from the [Releases](../../releases) page. Extract the contents of the archive to:
-
-        * **Windows Server**: `C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions\azure-keyvault-pam`
-        * **Linux**: `/opt/keyfactor/orchestrator/extensions/azure-keyvault-pam`
-
-2. Included in the release is a `manifest.json` file that contains the following object:
-    ```json
-
-    {
-        "Keyfactor:PAMProviders:Azure-KeyVault:InitializationInfo": {
-            "KeyVaultUri": "https://myvault.vault.azure.net",
-            "AuthorityHost": "public"
-        }
-    }
-
-    ```
-
-    Populate the fields in this object with credentials and configuration data collected in the [requirements](docs/azure-keyvault-serviceprincipal.md#requirements) section.
-
-3. Restart the Universal Orchestrator service.
-
-
+('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file.',)
 
 
 
@@ -604,7 +477,7 @@ When entering Secret fields, select the **Load From Keyfactor Secrets** tab, and
 | KeyVaultUri | Key Vault URI | URI for your Azure Key Vault |
 | AuthorityHost | Authority Host | Authority host of your Azure infrastructure |
 | TenantId | Tenant ID | Tenant or directory ID in Azure |
-| ClientId | Client ID | Application ID in Entra AD |
+| ClientId | Client ID | Application ID in Microsoft Entra ID |
 | ClientSecret | ClientSecret | Client secret for your application ID |
 
 

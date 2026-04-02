@@ -54,9 +54,9 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         internal string GetValueFromDictionaryOrEnvironment(Dictionary<string, string> dictionary, string dictionaryName, string dictionaryKey,
             string environmentVariableName)
         {
-            _logger.MethodEntry(LogLevel.Debug);
+            _logger.MethodEntry();
             
-            _logger.LogDebug($"Looking up a value for environment variable {environmentVariableName} and for key {dictionaryKey} in dictionary {dictionaryName}...");
+            _logger.LogTrace($"Looking up a value for environment variable {environmentVariableName} and for key {dictionaryKey} in dictionary {dictionaryName}...");
             
             string envValue = Environment.GetEnvironmentVariable(environmentVariableName);
             string dictionaryValue = GetValueFromDictionary(dictionary, dictionaryName, dictionaryKey, false);
@@ -69,9 +69,10 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
                 _logger.LogError(message);
                 throw new KeyVaultPamException(message);
             }
-            else if (string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
+            
+            if (string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
             {
-                _logger.LogDebug($"Value not found in dictionary but found in dictionary. Returning value from dictionary.");
+                _logger.LogDebug($"Value not found in environment but found in dictionary. Returning value from dictionary.");
                 result = dictionaryValue;
             }
             else if (!string.IsNullOrEmpty(envValue) && !string.IsNullOrEmpty(dictionaryValue))
@@ -85,9 +86,9 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
                 result = envValue;
             }
             
-            _logger.LogDebug($"Finished looking up a value for environment variable {environmentVariableName} and for key {dictionaryKey} in dictionary {dictionaryName}.");
+            _logger.LogTrace($"Finished looking up a value for environment variable {environmentVariableName} and for key {dictionaryKey} in dictionary {dictionaryName}.");
             
-            _logger.MethodExit(LogLevel.Debug);
+            _logger.MethodExit();
 
             return result;
         }
@@ -114,8 +115,8 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         /// <exception cref="KeyVaultPamException">Thrown when key is not found or value is empty, and throwIfNotFound is true</exception>
         internal string GetValueFromDictionary(Dictionary<string, string> dictionary, string dictionaryName, string key, bool throwIfNotFound = true)
         {
-            _logger.MethodEntry(LogLevel.Debug);
-            _logger.LogDebug($"Getting value of key {key} from dictionary {dictionaryName}...");
+            _logger.MethodEntry();
+            _logger.LogTrace($"Getting value of key {key} from dictionary {dictionaryName}...");
 
             if (!dictionary.ContainsKey(key) || string.IsNullOrEmpty(dictionary[key]))
             {
@@ -133,8 +134,8 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             }
 
             string value = dictionary[key];
-            _logger.MethodExit(LogLevel.Debug);
-            _logger.LogDebug($"Finished getting value of key {key} from dictionary {dictionaryName}.");
+            _logger.MethodExit();
+            _logger.LogTrace($"Finished getting value of key {key} from dictionary {dictionaryName}.");
 
             return value;
         }

@@ -24,7 +24,7 @@ __Initialization Parameters for each defined PAM Provider instance__
 | KeyVaultUri | Azure Key Vault URI | The unique auto generated URI for your Azure KeyVault. |
 | AuthorityHost | Authority Host | The authority host to authenticate against. For most use cases, this will simply be `public`. Please refer to the **Authority Host** section for more information on this parameter. If `AZURE_AUTHORITY_HOST` is a defined environment variable, it will override this value. |
 | TenantId | Tenant ID | The tenant (directory) ID in Azure the Azure Key Vault belongs to. If `AZURE_TENANT_ID` is a defined environment variable, it will override this value. |
-| ClientId | Client ID | The application ID in Entra AD. If `AZURE_CLIENT_ID` is a defined environment variable, it will override this value. |
+| ClientId | Client ID | The application ID in Microsoft Entra ID. If `AZURE_CLIENT_ID` is a defined environment variable, it will override this value. |
 | ClientSecret | Client Secret | The client secret for the application ID. If `AZURE_CLIENT_SECRET` is a defined environment variable, it will override this value. |
 
 __Instance Parameters for each retrieved secret field__
@@ -32,18 +32,11 @@ __Instance Parameters for each retrieved secret field__
 | :---: | :---: | --- |
 | SecretId | Secret Name | The name of the secret you assigned in Azure Key Vault. |
 
-### Authority Hosts
+## Platform Install
 
-The Azure Key Vault PAM provider requires an **Authority Host** to be defined. The **Authority Host** is the endpoint with which Azure will authenticate against. There are predefined Azure Authority Hosts the PAM Provider library will resolve to. The value and resolved Authority Host can be found below:
+The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file, and then update the `InitializationInfo` section with the appropriate values.
 
-|Value|Authority Host|
-|--|--|
-|china|Azure China|
-|government|Azure Government|
-|public|Azure Public Cloud|
+## Orchestrator Install
 
-For most use cases, `public` will be an acceptable **Authority Host** value for your PAM provider. You may also provide a custom authority host not defined in the table above, but the authority host ***must*** begin with `https://`, for example `https://custom.microsoftonline.com`.
+The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file.
 
-Authority Hosts may also be specified via the `AZURE_AUTHORITY_HOST` environment variable. If this environment variable is configured, it will override the value supplied to the PAM provider.
-
-For more information on Azure authority hosts, please review [the Azure SDK documentation](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.azureauthorityhosts?view=azure-dotnet#properties).

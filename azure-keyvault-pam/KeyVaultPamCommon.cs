@@ -59,13 +59,15 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         public string GetPassword(Dictionary<string, string> instanceParameters,
             Dictionary<string, string> initializationInfo)
         {
-            _logger.MethodEntry(LogLevel.Debug);
+            _logger.MethodEntry();
 
             string password = GetAzureKeyVaultSecret(instanceParameters, initializationInfo)
                 .GetAwaiter()
                 .GetResult();
 
-            _logger.MethodExit(LogLevel.Debug);
+            _logger.MethodExit();
+            
+            _logger.LogInformation("Successfully retrieved secret from Azure Key Vault.");
 
             return password;
         }
@@ -91,7 +93,7 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
         private async Task<string> GetAzureKeyVaultSecret(Dictionary<string, string> instanceParameters,
             Dictionary<string, string> initializationInfo)
         {
-            _logger.MethodEntry(LogLevel.Debug);
+            _logger.MethodEntry();
             
             _logger.LogDebug($"Using PAM Provider: {Name}");
 
@@ -104,15 +106,15 @@ namespace Keyfactor.Extensions.Pam.AzureKeyVault
             string secretId = _resolver.GetValueFromDictionary(instanceParameters, "instanceParameters", "SecretId");
             _logger.LogDebug($"SecretId: {secretId}");
 
-            _logger.LogDebug("Getting secret from Azure Key Vault...");
+            _logger.LogTrace("Getting secret from Azure Key Vault...");
 
             KeyVaultSecret secret = await _secretClient
                 .GetSecretAsync(secretId)
                 .ConfigureAwait(false);
 
-            _logger.LogDebug("Finished getting secret from Azure Key Vault.");
+            _logger.LogTrace("Finished getting secret from Azure Key Vault.");
 
-            _logger.MethodExit(LogLevel.Debug);
+            _logger.MethodExit();
 
             return secret.Value;
         }
