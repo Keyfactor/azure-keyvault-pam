@@ -12,12 +12,20 @@
 
 <p align="center">
   <!-- TOC -->
+  <a href="#overview">
+    <b>Overview</b>
+  </a>
+  ·
+  <a href="#installation">
+    <b>Installation</b>
+  </a>
+  ·
+  <a href="#usage">
+    <b>Usage</b>
+  </a>
+  ·
   <a href="#support">
     <b>Support</b>
-  </a> 
-  ·
-  <a href="#getting-started">
-    <b>Installation</b>
   </a>
   ·
   <a href="#license">
@@ -42,7 +50,7 @@ There are two Azure Key Vault PAM Providers available: `Azure-KeyVault` and `Azu
 
 Here's a matrix explaining the differences between the two extensions:
 
-| PAM Type | Recommended Use Case | manifest.json Configuration | 
+| PAM Type | Recommended Use Case | manifest.json Configuration |
 |--|--|--|
 | Azure-KeyVault | Recommended if Orchestrator or machine can assume an Azure role with a managed identity or read credentials from environment variables to authenticate with Azure Key Vault. [How to setup managed identity access to KeyVault](https://learn.microsoft.com/en-us/azure/key-vault/general/authentication) | - |
 | Azure-KeyVault-ServicePrincipal | Recommended if you want to directly specify service principal credentials in your PAM provider configuration to authenticate with Azure Key Vault. Useful if Orchestrator or machine cannot assume an Azure role with managed identity or have ability to modify environment variables. [How to create an Azure service principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) | Replace `manifest.json` with contents of `ServicePrincipal-manifest.json` |
@@ -89,7 +97,6 @@ Navigate to **Certificates & Secrets** and create a new client secret. Note the 
 
 Now, navigate to your Azure Key Vault instance. Under the **Access Control (IAM)** section, add a new role assignment. You can assign the "Key Vault Secrets User" role, which will allow the service principal to read secrets from the Key Vault. Assign this role to the service principal you created in the previous step.
 
-
 ![Role Assignment](images/setup/roleassignment.png)
 
 Note the Key Vault URI from the Key Vault's overview page as you will need it for PAM provider configuration.
@@ -105,44 +112,38 @@ Finally, configure your PAM provider with the appropriate initialization and ins
 ![PAM Provider](images/setup/pam-provider.png)
 ![PAM Usage](images/setup/pam-usage.png)
 
-## Support
-The Azure Key Vault PAM Provider is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com. 
-
-> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
-
 ## Getting Started
 
 The Azure Key Vault PAM Provider is used by Command to resolve PAM-eligible credentials for Universal Orchestrator extensions and for accessing Certificate Authorities. When configured, Command will use the Azure Key Vault PAM Provider to retrieve credentials needed to communicate with the target system. There are two ways to install the Azure Key Vault PAM Provider, and you may elect to use one or both methods:
 
-1. **Locally on the Keyfactor Command server**: PAM credential resolution via the Azure Key Vault PAM Provider will occur on the Keyfactor Command server each time an elegible credential is needed.
-2. **Remotely On Universal Orchestrators**: When Jobs are dispatched to Universal Orchestrators, the associated Certificate Store extension assembly will use the Azure Key Vault PAM Provider to resolve eligible PAM credentials.
+1. **Locally on the Keyfactor Command server**: PAM credential resolution via the Azure Key Vault PAM Provider will occur on the Keyfactor Command server each time an eligible credential is needed.
+2. **Remotely on Universal Orchestrators**: When Jobs are dispatched to Universal Orchestrators, the associated Certificate Store extension assembly will use the Azure Key Vault PAM Provider to resolve eligible PAM credentials.
 
 Before proceeding with installation, you should consider which pattern is best for your requirements and use case.
 
 ### Installation
 
 > [!IMPORTANT]
-> For the most up-to-date and complete documentation on how to install a PAM provider extension, please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm?Highlight=pam%20provider#InstallingCustomPAMProviderExtensions)
-
+> For the most up-to-date and complete documentation on how to install a PAM provider extension, please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm?Highlight=pam%20provider#InstallingCustomPAMProviderExtensions).
 
 To install Azure Key Vault PAM Provider, it is recommended you install [kfutil](https://github.com/Keyfactor/kfutil). `kfutil` is a command-line tool that simplifies the process of creating PAM Types in Keyfactor Command.
 
-The Azure Key Vault PAM Provider implements 2 PAM Types. Depending on your use case, you may elect to install one, or all of these PAM Types. An overview for each type is linked below:
+The Azure Key Vault PAM Provider implements two PAM Types. Depending on your use case, you may elect to install one, or all of these PAM Types. An overview for each type is linked below:
+
 * [Azure-KeyVault](docs/azure-keyvault.md)
 * [Azure-KeyVault-ServicePrincipal](docs/azure-keyvault-serviceprincipal.md)
 
-
-
-
-
-
 <details><summary>Azure-KeyVault</summary>
 
+#### Overview
+
+The default Azure Key Vault PAM extension is the recommended extension. This extension is the most flexible. It is able to assume credentials from your machine's Azure role or via environment variables if configured.
 
 #### Requirements
+
    The Azure Key Vault PAM extension requires a Key Vault hosted in Azure (Public / Government / China) or a Key Vault hosted with Azure Key Vault-compatible APIs. To access your Key Vault, permissions will need to be configured to allow your machine to the Key Vault (details found below).
 
-   An Azure Key Vault can be easily created and configured within Azure (documentation for how to create a key vault in the Azure Portal can be found [here](https://learn.microsoft.com/en-us/azure/key-vault/general/quick-create-portal)). Each Azure Key Vault will have its own unique endpoint (Vault URI) which is visible from the key vault's _Overview_ section. 
+   An Azure Key Vault can be easily created and configured within Azure (documentation for how to create a key vault in the Azure Portal can be found [here](https://learn.microsoft.com/en-us/azure/key-vault/general/quick-create-portal)). Each Azure Key Vault will have its own unique endpoint (Vault URI) which is visible from the key vault's _Overview_ section.
 
    New secrets can be added to your Azure Key Vault under the key vault's _Secrets_ section. Documentation on how to create a secret in Azure Portal can be found [here](https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-portal#add-a-secret-to-key-vault).
 
@@ -167,76 +168,71 @@ The Azure Key Vault PAM Provider implements 2 PAM Types. Depending on your use c
 
 #### Create PAM type in Keyfactor Command
 
-
 ##### Using `kfutil`
+
 Create the required PAM Types in the connected Command platform.
 
 ```shell
 # Azure-KeyVault
-kfutil pam types-create -r azure-keyvault-pam -n Azure-KeyVault
+kfutil pam-types create -r azure-keyvault-pam -n Azure-KeyVault
 ```
 
 ##### Using the API
-For full API docs please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/WebAPI/KeyfactorAPI/PAMProvidersPOSTTypes.htm?Highlight=pam%20type)
 
-Below is the payload to `POST` to the Keyfactor Command API
+For full API docs please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/WebAPI/KeyfactorAPI/PAMProvidersPOSTTypes.htm?Highlight=pam%20type).
+
+Below is the payload to `POST` to the Keyfactor Command API:
+
 ```json
 {
-    "Name": "Azure-KeyVault",
-    "Parameters": [
-        {
-            "Name": "KeyVaultUri",
-            "DisplayName": "Key Vault URI",
-            "DataType": 1,
-            "InstanceLevel": false,
-            "Description": "URI for your Azure Key Vault"
-        },
-        {
-            "Name": "AuthorityHost",
-            "DisplayName": "Authority Host",
-            "DataType": 1,
-            "InstanceLevel": false,
-            "Description": "Authority host of your Azure infrastructure"
-        },
-        {
-            "Name": "SecretId",
-            "DisplayName": "Secret ID",
-            "DataType": 1,
-            "InstanceLevel": true,
-            "Description": "Name of your secret in Azure Key Vault"
-        }
-    ]
+  "Name": "Azure-KeyVault",
+  "Parameters": [
+    {
+      "Name": "KeyVaultUri",
+      "DisplayName": "Key Vault URI",
+      "DataType": 1,
+      "InstanceLevel": false,
+      "Description": "URI for your Azure Key Vault"
+    },
+    {
+      "Name": "AuthorityHost",
+      "DisplayName": "Authority Host",
+      "DataType": 1,
+      "InstanceLevel": false,
+      "Description": "Authority host of your Azure infrastructure"
+    },
+    {
+      "Name": "SecretId",
+      "DisplayName": "Secret ID",
+      "DataType": 1,
+      "InstanceLevel": true,
+      "Description": "Name of your secret in Azure Key Vault"
+    }
+  ]
 }
 ```
 
 #### Install PAM provider on Keyfactor Command Host (Local)
 
-
-('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Modify your `manifest.json`, updating the `InitializationInfo` section with the appropriate values.',)
-
+The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Modify your `manifest.json`, updating the `InitializationInfo` section with the appropriate values.
 
 #### Install PAM provider on a Universal Orchestrator Host (Remote)
 
-
-('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension.',)
-
-
+The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension.
 
 </details>
 
-
-
-
-
-
-
 <details><summary>Azure-KeyVault-ServicePrincipal</summary>
 
+#### Overview
+
+The Service Principal Azure Key Vault PAM extension is an alternative extension that allows end users to specify service principal credentials to access Azure Key Vault. This extension is less flexible but offers an easy way to configure your Key Vault to authenticate with your Key Vault.
 
 #### Requirements
+
    The Azure Key Vault PAM extension requires a Key Vault hosted in Azure (Public / Government / China) or a Key Vault hosted with Azure Key Vault-compatible APIs. To access your Key Vault, permissions will need to be configured to allow your machine to the Key Vault (details found below).
 
-   An Azure Key Vault can be easily created and configured within Azure (documentation for how to create a key vault in the Azure Portal can be found [here](https://learn.microsoft.com/en-us/azure/key-vault/general/quick-create-portal)). Each Azure Key Vault will have its own unique endpoint (Vault URI) which is visible from the key vault's _Overview_ section. 
+   An Azure Key Vault can be easily created and configured within Azure (documentation for how to create a key vault in the Azure Portal can be found [here](https://learn.microsoft.com/en-us/azure/key-vault/general/quick-create-portal)). Each Azure Key Vault will have its own unique endpoint (Vault URI) which is visible from the key vault's _Overview_ section.
 
    New secrets can be added to your Azure Key Vault under the key vault's _Secrets_ section. Documentation on how to create a secret in Azure Portal can be found [here](https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-portal#add-a-secret-to-key-vault).
 
@@ -264,150 +260,142 @@ Below is the payload to `POST` to the Keyfactor Command API
 
 #### Create PAM type in Keyfactor Command
 
-
 ##### Using `kfutil`
+
 Create the required PAM Types in the connected Command platform.
 
 ```shell
 # Azure-KeyVault-ServicePrincipal
-kfutil pam types-create -r azure-keyvault-pam -n Azure-KeyVault-ServicePrincipal
+kfutil pam-types create -r azure-keyvault-pam -n Azure-KeyVault-ServicePrincipal
 ```
 
 ##### Using the API
-For full API docs please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/WebAPI/KeyfactorAPI/PAMProvidersPOSTTypes.htm?Highlight=pam%20type)
 
-Below is the payload to `POST` to the Keyfactor Command API
+For full API docs please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/WebAPI/KeyfactorAPI/PAMProvidersPOSTTypes.htm?Highlight=pam%20type).
+
+Below is the payload to `POST` to the Keyfactor Command API:
+
 ```json
 {
-    "Name": "Azure-KeyVault-ServicePrincipal",
-    "Parameters": [
-        {
-            "Name": "KeyVaultUri",
-            "DisplayName": "Key Vault URI",
-            "DataType": 1,
-            "InstanceLevel": false,
-            "Description": "URI for your Azure Key Vault"
-        },
-        {
-            "Name": "AuthorityHost",
-            "DisplayName": "Authority Host",
-            "DataType": 1,
-            "InstanceLevel": false,
-            "Description": "Authority host of your Azure infrastructure"
-        },
-        {
-            "Name": "TenantId",
-            "DisplayName": "Tenant ID",
-            "DataType": 1,
-            "InstanceLevel": false,
-            "Description": "Tenant or directory ID in Azure"
-        },
-        {
-            "Name": "ClientId",
-            "DisplayName": "Client ID",
-            "DataType": 1,
-            "InstanceLevel": false,
-            "Description": "Application ID in Microsoft Entra ID"
-        },
-        {
-            "Name": "ClientSecret",
-            "DisplayName": "ClientSecret",
-            "DataType": 2,
-            "InstanceLevel": false,
-            "Description": "Client secret for your application ID"
-        },
-        {
-            "Name": "SecretId",
-            "DisplayName": "Secret ID",
-            "DataType": 1,
-            "InstanceLevel": true,
-            "Description": "Name of your secret in Azure Key Vault"
-        }
-    ]
+  "Name": "Azure-KeyVault-ServicePrincipal",
+  "Parameters": [
+    {
+      "Name": "KeyVaultUri",
+      "DisplayName": "Key Vault URI",
+      "DataType": 1,
+      "InstanceLevel": false,
+      "Description": "URI for your Azure Key Vault"
+    },
+    {
+      "Name": "AuthorityHost",
+      "DisplayName": "Authority Host",
+      "DataType": 1,
+      "InstanceLevel": false,
+      "Description": "Authority host of your Azure infrastructure"
+    },
+    {
+      "Name": "TenantId",
+      "DisplayName": "Tenant ID",
+      "DataType": 1,
+      "InstanceLevel": false,
+      "Description": "Tenant or directory ID in Azure"
+    },
+    {
+      "Name": "ClientId",
+      "DisplayName": "Client ID",
+      "DataType": 1,
+      "InstanceLevel": false,
+      "Description": "Application ID in Microsoft Entra ID"
+    },
+    {
+      "Name": "ClientSecret",
+      "DisplayName": "ClientSecret",
+      "DataType": 2,
+      "InstanceLevel": false,
+      "Description": "Client secret for your application ID"
+    },
+    {
+      "Name": "SecretId",
+      "DisplayName": "Secret ID",
+      "DataType": 1,
+      "InstanceLevel": true,
+      "Description": "Name of your secret in Azure Key Vault"
+    }
+  ]
 }
 ```
 
 #### Install PAM provider on Keyfactor Command Host (Local)
 
-
-('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file, and then update the `InitializationInfo` section with the appropriate values.',)
-
+The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file, and then update the `InitializationInfo` section with the appropriate values.
 
 #### Install PAM provider on a Universal Orchestrator Host (Remote)
 
-
-('The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file.',)
-
-
+The entire contents (which includes all library dependencies) should be copied when installing. Refer to the [Keyfactor Command documentation](https://software.keyfactor.com/Core-OnPrem/v24.4.1/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm) on how to install your extension. Copy the `ServicePrincipal-manifest.json` into your `manifest.json` file.
 
 </details>
 
-
-
-
-
 ### Usage
-
-
-
-
-
-<details><summary>Azure-KeyVault</summary>
-
 
 #### From Keyfactor Command Host (Local)
 
-
-
 ##### Define a PAM provider in Command
-1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Priviledged Access Management**.
 
-2. Select the **Add** button to create a new PAM provider. Click the dropdown for **Provider Type** and select **Azure-KeyVault**.
+1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Privileged Access Management**.
 
-> [!IMPORTANT]
-> If you're running Keyfactor Command 11+, make sure `Remote Provider` is unchecked.
+2. Select the **Add** button to create a new PAM provider. Click the dropdown for **Provider Type** and select the PAM type you want to use: **Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal**.
 
-3. Populate the fields with the necessary information collected in the [requirements](docs/azure-keyvault.md#requirements) section:
+   > [!IMPORTANT]
+   > If you're running Keyfactor Command 11+, make sure `Remote Provider` is unchecked.
 
-| Initialization parameter | Display Name | Description |
-| --- | --- | --- |
-| KeyVaultUri | Key Vault URI | URI for your Azure Key Vault |
-| AuthorityHost | Authority Host | Authority host of your Azure infrastructure |
+3. Populate the fields with the necessary information collected in the requirements section of the PAM type you selected, using the table for that type:
 
+   **Azure-KeyVault** ([requirements](docs/azure-keyvault.md#requirements))
+
+   | Initialization parameter | Display Name | Description |
+   | --- | --- | --- |
+   | KeyVaultUri | Key Vault URI | URI for your Azure Key Vault |
+   | AuthorityHost | Authority Host | Authority host of your Azure infrastructure |
+
+   **Azure-KeyVault-ServicePrincipal** ([requirements](docs/azure-keyvault-serviceprincipal.md#requirements))
+
+   | Initialization parameter | Display Name | Description |
+   | --- | --- | --- |
+   | KeyVaultUri | Key Vault URI | URI for your Azure Key Vault |
+   | AuthorityHost | Authority Host | Authority host of your Azure infrastructure |
+   | TenantId | Tenant ID | Tenant or directory ID in Azure |
+   | ClientId | Client ID | Application ID in Microsoft Entra ID |
+   | ClientSecret | ClientSecret | Client secret for your application ID |
 
 4. Click **Save**. The PAM provider is now available for use in Keyfactor Command.
 
 ##### Using the PAM provider
 
-Now, when defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault** will be available as a PAM provider option. When defining new Certificate Stores, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**. 
+Now, when defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal** will be available as a PAM provider option. When defining new Certificate Stores, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**.
 
-Select the **Load From PAM Provider** tab, choose the **Azure-KeyVault** provider from the list of **Providers**, and populate the fields with the necessary information from the table below:
+Select the **Load From PAM Provider** tab, choose the provider you defined from the list of **Providers**, and populate the fields with the necessary information from the table for its PAM type below:
+
+**Azure-KeyVault** ([requirements](docs/azure-keyvault.md#requirements)), **Azure-KeyVault-ServicePrincipal** ([requirements](docs/azure-keyvault-serviceprincipal.md#requirements))
 
 | Instance parameter | Display Name | Description |
 | --- | --- | --- |
 | SecretId | Secret ID | Name of your secret in Azure Key Vault |
 
-
-
-
-
 #### From a Universal Orchestrator Host (Remote)
-
-
 
 <details><summary>Keyfactor Command 11+</summary>
 
 ##### Define a remote PAM provider in Command
 
-In Command 11 and greater, before using the Azure-KeyVault PAM type, you must define a Remote PAM Provider in the Command portal.
+In Command 11 and greater, before using a PAM type (**Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal**), you must define a Remote PAM Provider in the Command portal.
 
-1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Priviledged Access Management**.
+1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Privileged Access Management**.
 
 2. Select the **Add** button to create a new PAM provider.
 
 3. Make sure that `Remote Provider` is checked.
 
-4. Click the dropdown for **Provider Type** and select **Azure-KeyVault**. 
+4. Click the dropdown for **Provider Type** and select the PAM type you want to use: **Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal**.
 
 5. Give the provider a unique name.
 
@@ -415,149 +403,57 @@ In Command 11 and greater, before using the Azure-KeyVault PAM type, you must de
 
 ##### Using the PAM provider
 
-When defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault** can be used as a PAM provider. When defining a new Certificate Store, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**.
+When defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal** can be used as a PAM provider. When defining a new Certificate Store, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**.
 
-Select the **Load From PAM Provider** tab, choose the **Azure-KeyVault** provider from the list of **Providers**, and populate the fields with the necessary information from the table below:
+Select the **Load From PAM Provider** tab, choose the provider you defined from the list of **Providers**, and populate the fields with the necessary information from the table for its PAM type below:
+
+**Azure-KeyVault** ([requirements](docs/azure-keyvault.md#requirements)), **Azure-KeyVault-ServicePrincipal** ([requirements](docs/azure-keyvault-serviceprincipal.md#requirements))
 
 | Instance parameter | Display Name | Description |
 | --- | --- | --- |
 | SecretId | Secret ID | Name of your secret in Azure Key Vault |
 
-
 </details>
 
 <details><summary>Keyfactor Command 10</summary>
 
-When defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault** can be used as a PAM provider.
+When defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal** can be used as a PAM provider.
 
 When entering Secret fields, select the **Load From Keyfactor Secrets** tab, and populate the **Secret Value** field with the following JSON object:
 
-```json
-{"SecretId": "Name of your secret in Azure Key Vault"}
+**Azure-KeyVault**, **Azure-KeyVault-ServicePrincipal**
 
+```json
+{
+  "SecretId": "<SecretId>"
+}
 ```
+
+Replace each `<placeholder>` with the value described for that instance parameter in the table above.
 
 > We recommend creating this JSON object in a text editor, and copying it into the Secret Value field.
 
 </details>
 
-
-
-
-
-</details>
-
+<details><summary>Azure-KeyVault</summary>
 
 > [!NOTE]
 > Additional information on Azure-KeyVault can be found in the [supplemental documentation](docs/azure-keyvault.md).
 
-
-
-
+</details>
 
 <details><summary>Azure-KeyVault-ServicePrincipal</summary>
-
-
-#### From Keyfactor Command Host (Local)
-
-
-
-##### Define a PAM provider in Command
-1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Priviledged Access Management**.
-
-2. Select the **Add** button to create a new PAM provider. Click the dropdown for **Provider Type** and select **Azure-KeyVault-ServicePrincipal**.
-
-> [!IMPORTANT]
-> If you're running Keyfactor Command 11+, make sure `Remote Provider` is unchecked.
-
-3. Populate the fields with the necessary information collected in the [requirements](docs/azure-keyvault-serviceprincipal.md#requirements) section:
-
-| Initialization parameter | Display Name | Description |
-| --- | --- | --- |
-| KeyVaultUri | Key Vault URI | URI for your Azure Key Vault |
-| AuthorityHost | Authority Host | Authority host of your Azure infrastructure |
-| TenantId | Tenant ID | Tenant or directory ID in Azure |
-| ClientId | Client ID | Application ID in Microsoft Entra ID |
-| ClientSecret | ClientSecret | Client secret for your application ID |
-
-
-4. Click **Save**. The PAM provider is now available for use in Keyfactor Command.
-
-##### Using the PAM provider
-
-Now, when defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault-ServicePrincipal** will be available as a PAM provider option. When defining new Certificate Stores, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**. 
-
-Select the **Load From PAM Provider** tab, choose the **Azure-KeyVault-ServicePrincipal** provider from the list of **Providers**, and populate the fields with the necessary information from the table below:
-
-| Instance parameter | Display Name | Description |
-| --- | --- | --- |
-| SecretId | Secret ID | Name of your secret in Azure Key Vault |
-
-
-
-
-
-#### From a Universal Orchestrator Host (Remote)
-
-
-
-<details><summary>Keyfactor Command 11+</summary>
-
-##### Define a remote PAM provider in Command
-
-In Command 11 and greater, before using the Azure-KeyVault-ServicePrincipal PAM type, you must define a Remote PAM Provider in the Command portal.
-
-1. In the Keyfactor Command Portal, hover over the ⚙️  (settings) icon in the top right corner of the screen and select **Priviledged Access Management**.
-
-2. Select the **Add** button to create a new PAM provider.
-
-3. Make sure that `Remote Provider` is checked.
-
-4. Click the dropdown for **Provider Type** and select **Azure-KeyVault-ServicePrincipal**. 
-
-5. Give the provider a unique name.
-
-6. Click "Save".
-
-##### Using the PAM provider
-
-When defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault-ServicePrincipal** can be used as a PAM provider. When defining a new Certificate Store, the secret parameter form will display tabs for **Load From Keyfactor Secrets** or **Load From PAM Provider**.
-
-Select the **Load From PAM Provider** tab, choose the **Azure-KeyVault-ServicePrincipal** provider from the list of **Providers**, and populate the fields with the necessary information from the table below:
-
-| Instance parameter | Display Name | Description |
-| --- | --- | --- |
-| SecretId | Secret ID | Name of your secret in Azure Key Vault |
-
-
-</details>
-
-<details><summary>Keyfactor Command 10</summary>
-
-When defining Certificate Stores (**Locations**->**Certificate Stores**), **Azure-KeyVault-ServicePrincipal** can be used as a PAM provider.
-
-When entering Secret fields, select the **Load From Keyfactor Secrets** tab, and populate the **Secret Value** field with the following JSON object:
-
-```json
-{"SecretId": "Name of your secret in Azure Key Vault"}
-
-```
-
-> We recommend creating this JSON object in a text editor, and copying it into the Secret Value field.
-
-</details>
-
-
-
-
-
-</details>
-
 
 > [!NOTE]
 > Additional information on Azure-KeyVault-ServicePrincipal can be found in the [supplemental documentation](docs/azure-keyvault-serviceprincipal.md).
 
+</details>
 
+## Support
+
+The Azure Key Vault PAM Provider is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com.
+
+> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
 
 ## License
 
